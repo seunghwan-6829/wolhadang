@@ -1,3 +1,5 @@
+import { Seal } from "./Seal";
+
 export function Analyzing({
   name,
   character,
@@ -7,12 +9,8 @@ export function Analyzing({
 }) {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-paper px-6 text-center">
-      <span className="seal mb-6" style={{ width: 48, height: 48, fontSize: 16 }}>
-        <span>
-          터
-          <br />
-          줏
-        </span>
+      <span className="mb-6 inline-flex">
+        <Seal size={48} />
       </span>
       <p className="text-[12px] tracking-[0.2em] text-sub">터줏 김선생</p>
       <h1 className="mt-2 font-serif text-[22px] text-ink">막힌 곳을 찾고 있다</h1>

@@ -18,11 +18,18 @@ const serif = Noto_Serif_KR({
 
 export const metadata: Metadata = {
   title: {
-    default: "터줏 김선생 — 막힌 한 군데",
-    template: "%s | 터줏 김선생",
+    default: "묵헌 — 막힌 한 군데",
+    template: "%s | 묵헌",
   },
   description: "인생이 안 풀린 게 아니라, 한 군데가 막혀 있던 겁니다.",
-  applicationName: "터줏 김선생",
+  applicationName: "묵헌",
+  openGraph: {
+    title: "묵헌 — 막힌 한 군데",
+    description: "인생이 안 풀린 게 아니라, 한 군데가 막혀 있던 겁니다.",
+    siteName: "묵헌",
+    locale: "ko_KR",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

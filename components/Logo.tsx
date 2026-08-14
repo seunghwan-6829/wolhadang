@@ -9,7 +9,7 @@ export function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
     <Link href="/" className="flex items-center gap-2">
       <Seal size={seal} />
       <span className={`font-serif font-bold tracking-tight text-ink ${text}`}>
-        터줏 김선생
+        묵헌
       </span>
     </Link>
   );

@@ -38,7 +38,7 @@ export function PayClient({ product }: { product: Product }) {
         <div className="mt-6 flex gap-3 rounded-2xl border border-line bg-paper p-3">
           <span className="relative h-20 w-[45px] shrink-0 overflow-hidden rounded-lg bg-[#161412]">
             <span className="absolute inset-0 flex items-center justify-center font-serif text-[10px] text-[#f3ead8]">
-              터줏
+              墨
             </span>
           </span>
           <div className="min-w-0">
