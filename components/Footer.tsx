@@ -1,7 +1,8 @@
 export function Footer() {
   return (
     <footer className="mt-4 px-4 pb-8 pt-6 text-[11px] leading-5 text-sub">
-      <p className="font-serif text-sm text-ink">월하당</p>
+      <p className="font-serif text-sm text-ink">터줏 김선생</p>
+      <p className="mt-0.5 text-[11px] tracking-wide text-neutral-500">월하당</p>
       <p className="mt-3">
         대표: 홍길동 · 사업자등록번호: 000-00-00000
         <br />

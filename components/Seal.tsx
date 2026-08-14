@@ -7,9 +7,9 @@ export function Seal({ size = 28 }: { size?: number }) {
       aria-hidden
     >
       <span>
-        月
+        터
         <br />
-        下
+        줏
       </span>
     </span>
   );

@@ -7,15 +7,15 @@ const TABS = [
   { href: "/", label: "홈", icon: HomeIcon, match: (p: string) => p === "/" },
   {
     href: "/s/today",
-    label: "오늘의 운세",
+    label: "오늘의 한 줄",
     icon: SunIcon,
     match: (p: string) => p.startsWith("/s/today"),
   },
   {
-    href: "/search",
-    label: "검색",
-    icon: SearchIcon,
-    match: (p: string) => p.startsWith("/search"),
+    href: "/s/makhin",
+    label: "정통사주",
+    icon: BookIcon,
+    match: (p: string) => p.startsWith("/s/makhin"),
   },
   {
     href: "/archive",
@@ -28,7 +28,7 @@ const TABS = [
 export function TabBar() {
   const path = usePathname() || "/";
   return (
-    <nav className="sticky bottom-0 z-30 border-t border-line bg-white pb-[max(8px,env(safe-area-inset-bottom))] pt-1">
+    <nav className="sticky bottom-0 z-30 border-t border-line bg-paper pb-[max(8px,env(safe-area-inset-bottom))] pt-1">
       <ul className="grid grid-cols-4">
         {TABS.map((t) => {
           const on = t.match(path);
@@ -53,10 +53,10 @@ export function TabBar() {
 
 function HomeIcon({ on }: { on: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill={on ? "#111" : "none"}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill={on ? "#14110e" : "none"}>
       <path
         d="M4 10.5L12 4L20 10.5V20H15V14H9V20H4V10.5Z"
-        stroke="#111"
+        stroke="#14110e"
         strokeWidth="1.6"
         strokeLinejoin="round"
       />
@@ -66,21 +66,26 @@ function HomeIcon({ on }: { on: boolean }) {
 function SunIcon({ on }: { on: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="4" stroke="#111" strokeWidth={on ? 2 : 1.6} />
+      <circle cx="12" cy="12" r="4" stroke="#14110e" strokeWidth={on ? 2 : 1.6} />
       <path
         d="M12 3V5M12 19V21M3 12H5M19 12H21M5.6 5.6L7 7M17 17L18.4 18.4M18.4 5.6L17 7M7 17L5.6 18.4"
-        stroke="#111"
+        stroke="#14110e"
         strokeWidth="1.6"
         strokeLinecap="round"
       />
     </svg>
   );
 }
-function SearchIcon({ on }: { on: boolean }) {
+function BookIcon({ on }: { on: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="11" cy="11" r="6.5" stroke="#111" strokeWidth={on ? 2 : 1.6} />
-      <path d="M16 16L20.5 20.5" stroke="#111" strokeWidth="1.6" strokeLinecap="round" />
+      <path
+        d="M5 5.5C5 4.67 5.67 4 6.5 4H19V19H6.5C5.67 19 5 18.33 5 17.5V5.5Z"
+        stroke="#14110e"
+        strokeWidth={on ? 2 : 1.6}
+        strokeLinejoin="round"
+      />
+      <path d="M5 17.5C5 16.67 5.67 16 6.5 16H19" stroke="#14110e" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -89,11 +94,11 @@ function BoxIcon({ on }: { on: boolean }) {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <path
         d="M5 8.5L12 5L19 8.5V16.5L12 20L5 16.5V8.5Z"
-        stroke="#111"
+        stroke="#14110e"
         strokeWidth={on ? 2 : 1.6}
         strokeLinejoin="round"
       />
-      <path d="M5 8.5L12 12L19 8.5M12 12V20" stroke="#111" strokeWidth="1.5" />
+      <path d="M5 8.5L12 12L19 8.5M12 12V20" stroke="#14110e" strokeWidth="1.5" />
     </svg>
   );
 }

@@ -4,10 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { Logo } from "./Logo";
 
+const MENU: [string, string][] = [
+  ["/", "홈"],
+  ["/s/makhin", "정통사주"],
+  ["/s/today", "오늘의 한 줄"],
+  ["/s/jaemul", "재물"],
+  ["/archive", "보관함"],
+];
+
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
       <div className="flex h-12 items-center justify-between px-3">
         <Logo size="sm" />
         <button
@@ -24,7 +32,7 @@ export function Header() {
         </button>
       </div>
       {open ? (
-        <div className="fixed inset-0 z-50 mx-auto max-w-[430px] bg-white">
+        <div className="fixed inset-0 z-50 mx-auto max-w-[430px] bg-paper">
           <div className="flex h-12 items-center justify-between px-3">
             <Logo size="sm" />
             <button
@@ -37,14 +45,7 @@ export function Header() {
             </button>
           </div>
           <nav className="px-6 pt-8">
-            {[
-              ["/", "홈"],
-              ["/s/today", "오늘의 운세"],
-              ["/search", "검색"],
-              ["/archive", "보관함"],
-              ["/s/jeongtong", "은월아씨 정통사주"],
-              ["/s/yeonae", "단홍낭자 연애비책"],
-            ].map(([href, label]) => (
+            {MENU.map(([href, label]) => (
               <Link
                 key={href}
                 href={href}

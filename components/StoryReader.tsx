@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { Product } from "@/lib/data/products";
@@ -11,6 +10,7 @@ import { buildReading } from "@/lib/saju";
 import { buildStoryCuts, type StoryCut } from "@/lib/saju/story";
 import type { BirthInput, Element, FullReading } from "@/lib/saju/types";
 import { Analyzing } from "./Analyzing";
+import { FrameMedia } from "./FrameMedia";
 import { MyeongshikCard } from "./MyeongshikCard";
 import { BackBar } from "./Header";
 
@@ -96,14 +96,14 @@ export function StoryReader({
 
   if (phase === "missing") {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center px-6 text-center">
-        <p className="font-serif text-xl">생년월일이 없어요</p>
-        <p className="mt-2 text-sm text-sub">다시 입력해 주세요.</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center bg-paper px-6 text-center">
+        <p className="font-serif text-xl">태어난 때가 없다</p>
+        <p className="mt-2 text-sm text-sub">때를 정확히 말해야 막힌 곳이 보인다.</p>
         <Link
           href={`/s/${product.slug}/input`}
           className="cta-dark mt-6 inline-flex h-12 items-center rounded-full px-6"
         >
-          사주 입력하기
+          때를 말하라
         </Link>
       </div>
     );
@@ -125,7 +125,7 @@ export function StoryReader({
   const showPay = !paid && product.price > 0;
 
   return (
-    <div className="relative bg-black">
+    <div className="relative bg-[#161412]">
       <StoryCuts
         cuts={viewCuts}
         product={product}
@@ -139,7 +139,7 @@ export function StoryReader({
             href={payHref}
             className="cta-dark flex h-12 items-center justify-center rounded-full text-[15px]"
           >
-            전체 스토리 보기 {formatPrice(product.price)}
+            뒷장을 연다 {formatPrice(product.price)}
           </Link>
         </div>
       ) : null}
@@ -176,7 +176,7 @@ function NextCut({ cuts }: { cuts: StoryCut[] }) {
           .getElementById(`cut-${next.id}`)
           ?.scrollIntoView({ behavior: "smooth" });
       }}
-      className="fixed bottom-24 left-1/2 z-30 -translate-x-1/2 rounded-full bg-white/92 px-4 py-2 text-[13px] font-semibold text-ink shadow-lg"
+      className="fixed bottom-24 left-1/2 z-30 -translate-x-1/2 rounded-full bg-[#f3ead8]/92 px-4 py-2 text-[13px] font-semibold text-ink shadow-lg"
     >
       다음 컷
     </button>
@@ -200,9 +200,11 @@ function StoryCuts({
         <section
           key={cut.id}
           id={`cut-${cut.id}`}
-          className={`relative overflow-hidden ${cut.tall ? "min-h-[100dvh]" : "min-h-[70dvh]"}`}
+          className="flex min-h-dvh items-center justify-center bg-[#161412]"
         >
-          <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
+          <div className="w-full">
+            <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
+          </div>
         </section>
       ))}
     </>
@@ -221,51 +223,44 @@ function CutInner({
   payHref: string;
 }) {
   const locked = Boolean(cut.lock);
+  const img = cut.image ?? product.story ?? product.funnel;
 
   if (cut.type === "cover") {
     return (
-      <>
-        {cut.image ? (
-          <Image
-            src={cut.image}
-            alt=""
-            fill
-            priority
-            sizes="430px"
-            className="object-cover"
-            style={{ objectPosition: product.objectPos ?? "center 18%" }}
-          />
-        ) : null}
+      <FrameMedia src={img} alt={product.character}>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/20" />
         <BackBar href={`/s/${product.slug}/input`} light />
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-16 text-white">
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-16 text-[#f3ead8]">
           <p className="text-[13px] tracking-wide text-white/80">{cut.name}</p>
           <h1 className="mt-1 font-serif text-[26px] font-semibold leading-snug">
             {cut.productTitle}
           </h1>
         </div>
-      </>
+      </FrameMedia>
     );
   }
 
   if (cut.type === "splash") {
     const el = cut.element ?? "금";
     return (
-      <div className={`${EL_CLASS[el]} flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center`}
+      <div
+        className={`${EL_CLASS[el]} relative aspect-[9/16] w-full overflow-hidden`}
         style={{ background: "var(--el-wash)" }}
       >
-        <p className="text-[12px] tracking-[0.25em] text-sub">日柱</p>
-        <p
-          className="mt-4 font-serif text-[88px] font-bold leading-none tracking-tight"
-          style={{ color: "var(--el)" }}
-        >
-          {cut.hanja}
-        </p>
-        <p className="mt-3 font-serif text-[20px] text-ink">{cut.hanjaKo}</p>
-        <p className="mt-1 text-[13px] text-sub">{cut.sub}</p>
-        <p className="mt-8 max-w-[280px] font-serif text-[17px] leading-7 text-ink">
-          {cut.text}
-        </p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+          <p className="text-[12px] tracking-[0.25em] text-sub">日柱</p>
+          <p
+            className="mt-4 font-serif text-[88px] font-bold leading-none tracking-tight"
+            style={{ color: "var(--el)" }}
+          >
+            {cut.hanja}
+          </p>
+          <p className="mt-3 font-serif text-[20px] text-ink">{cut.hanjaKo}</p>
+          <p className="mt-1 text-[13px] text-sub">{cut.sub}</p>
+          <p className="mt-8 max-w-[280px] font-serif text-[17px] leading-7 text-ink">
+            {cut.text}
+          </p>
+        </div>
       </div>
     );
   }
@@ -274,7 +269,7 @@ function CutInner({
     const count = reading.saju.elementCount;
     const max = Math.max(...Object.values(count), 1);
     return (
-      <div className="flex min-h-[100dvh] flex-col justify-end bg-[#0f0f0f] px-5 pb-16 pt-10">
+      <div className="relative aspect-[9/16] w-full overflow-hidden bg-[#0f0f0f] px-5 pb-10 pt-10">
         <p className="text-[12px] tracking-wide text-white/50">오행</p>
         <div className="mt-4 space-y-3">
           {(Object.entries(count) as [Element, number][]).map(([el, n]) => (
@@ -299,14 +294,16 @@ function CutInner({
             </div>
           ))}
         </div>
-        <Bubble speaker={cut.speaker} text={cut.text} />
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-10">
+          <Bubble speaker={cut.speaker} text={cut.text} />
+        </div>
       </div>
     );
   }
 
   if (cut.type === "myeongshik") {
     return (
-      <div className="min-h-[70dvh] bg-white px-4 pb-28 pt-10">
+      <div className="relative aspect-[9/16] w-full overflow-hidden bg-paper px-4 pb-10 pt-10">
         <p className="font-serif text-[18px] text-ink">{cut.text}</p>
         <div className="mt-5">
           <MyeongshikCard saju={reading.saju} />
@@ -315,27 +312,14 @@ function CutInner({
           href="/"
           className="mt-8 flex h-12 items-center justify-center rounded-full ring-1 ring-black/15 text-[15px]"
         >
-          다른 풀이 둘러보기
+          처음으로
         </Link>
       </div>
     );
   }
 
-  // dialogue
   return (
-    <>
-      {cut.image ? (
-        <Image
-          src={cut.image}
-          alt=""
-          fill
-          sizes="430px"
-          className={`object-cover ${locked ? "locked-blur scale-105" : ""}`}
-          style={{ objectPosition: product.objectPos ?? "center 18%" }}
-        />
-      ) : (
-        <div className="absolute inset-0 bg-neutral-900" />
-      )}
+    <FrameMedia src={img} alt={product.character}>
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
       <div className={`absolute inset-x-0 bottom-0 px-5 pb-16 ${locked ? "locked-blur" : ""}`}>
         <Bubble speaker={cut.speaker} text={cut.text} />
@@ -345,22 +329,22 @@ function CutInner({
           <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 text-xl text-white">
             ⌀
           </span>
-          <p className="mt-3 font-serif text-[18px] text-white">여기서부터는 잠긴 컷이에요</p>
+          <p className="mt-3 font-serif text-[18px] text-[#f3ead8]">여기서부터는 잠겼다</p>
           <Link
             href={payHref}
             className="cta-dark mt-5 inline-flex h-11 items-center rounded-full px-5 text-[14px]"
           >
-            전체 스토리 보기 {formatPrice(product.price)}
+            뒷장을 연다 {formatPrice(product.price)}
           </Link>
         </div>
       ) : null}
-    </>
+    </FrameMedia>
   );
 }
 
 function Bubble({ speaker, text }: { speaker?: string; text: string }) {
   return (
-    <div className="rounded-2xl bg-white/95 px-4 py-3 text-ink shadow-[0_8px_30px_rgba(0,0,0,0.25)]">
+    <div className="rounded-2xl bg-[#f6f0e4]/95 px-4 py-3 text-ink shadow-[0_8px_30px_rgba(0,0,0,0.25)]">
       {speaker ? (
         <p className="text-[11px] font-medium text-sub">{speaker}</p>
       ) : null}

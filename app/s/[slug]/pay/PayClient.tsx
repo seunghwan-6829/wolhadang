@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { formatPrice, type Product } from "@/lib/data/products";
@@ -27,25 +26,20 @@ export function PayClient({ product }: { product: Product }) {
   }
 
   return (
-    <div className="relative min-h-dvh bg-white">
+    <div className="relative min-h-dvh bg-paper">
       <BackBar href={`/s/${product.slug}/story?${qs}`} />
       <main className="px-5 pb-16 pt-14">
         <p className="text-[11px] tracking-widest text-sub">MOCK CHECKOUT</p>
-        <h1 className="mt-1 font-serif text-2xl text-ink">결제 (데모)</h1>
+        <h1 className="mt-1 font-serif text-2xl text-ink">값을 치른다 (데모)</h1>
         <p className="mt-2 text-[13px] text-sub">
-          실제 결제는 연결되지 않았어요. 버튼을 누르면 전체 스토리가 열려요.
+          실제 결제는 없다. 버튼을 누르면 뒷장이 열린다.
         </p>
 
-        <div className="mt-6 flex gap-3 rounded-2xl border border-line p-3">
-          <span className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-neutral-200">
-            <Image
-              src={product.poster}
-              alt=""
-              fill
-              sizes="64px"
-              className="object-cover"
-              style={{ objectPosition: product.objectPos ?? "center 20%" }}
-            />
+        <div className="mt-6 flex gap-3 rounded-2xl border border-line bg-paper p-3">
+          <span className="relative h-20 w-[45px] shrink-0 overflow-hidden rounded-lg bg-[#161412]">
+            <span className="absolute inset-0 flex items-center justify-center font-serif text-[10px] text-[#f3ead8]">
+              터줏
+            </span>
           </span>
           <div className="min-w-0">
             <p className="font-serif text-[16px] text-ink">{product.name}</p>
@@ -77,7 +71,7 @@ export function PayClient({ product }: { product: Product }) {
           href={`/s/${product.slug}/story?${qs}`}
           className="mt-8 block text-center text-[13px] text-sub underline"
         >
-          무료 컷으로 돌아가기
+          앞장으로 돌아가기
         </Link>
       </main>
     </div>

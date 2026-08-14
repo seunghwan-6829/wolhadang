@@ -10,7 +10,7 @@ export function StickyCta({
   sub?: string;
 }) {
   return (
-    <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-white via-white to-white/0 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6">
+    <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-paper via-paper to-paper/0 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6">
       {sub ? (
         <p className="mb-2 text-center text-[12px] text-sub">{sub}</p>
       ) : null}

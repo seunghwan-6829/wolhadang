@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/data/products";
 import { YEAR_MAX, YEAR_MIN } from "@/lib/saju/constants";
-import type { BirthInput, CalendarType, Gender, LoveStatus } from "@/lib/saju/types";
+import type { BirthInput, CalendarType, Gender } from "@/lib/saju/types";
 import { BIRTH_STORAGE_KEY, birthToQuery } from "@/lib/birth-query";
 
 type PersonDraft = {
@@ -193,14 +193,7 @@ function validPerson(p: PersonDraft): boolean {
 export function BirthForm({ product }: { product: Product }) {
   const router = useRouter();
   const [me, setMe] = useState<PersonDraft>(emptyPerson);
-  const [partner, setPartner] = useState<PersonDraft>(() => ({
-    ...emptyPerson(),
-    gender: "",
-  }));
-  const [loveStatus, setLoveStatus] = useState<LoveStatus>("solo");
-
-  const ok =
-    validPerson(me) && (!product.needsPartner || validPerson(partner));
+  const ok = validPerson(me);
 
   function toInput(p: PersonDraft): Omit<BirthInput, "loveStatus" | "partner"> {
     const [hh, mm] = (p.time || "13:20").split(":").map(Number);
@@ -223,8 +216,6 @@ export function BirthForm({ product }: { product: Product }) {
     if (!ok) return;
     const input: BirthInput = {
       ...toInput(me),
-      loveStatus: product.needsLoveStatus ? loveStatus : undefined,
-      partner: product.needsPartner ? toInput(partner) : undefined,
     };
     try {
       sessionStorage.setItem(BIRTH_STORAGE_KEY, JSON.stringify(input));
@@ -236,42 +227,7 @@ export function BirthForm({ product }: { product: Product }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-8 pb-28">
-      <PersonFields value={me} onChange={setMe} title="나의 사주" namePlaceholder="이름 (최대 4자)" />
-
-      {product.needsLoveStatus ? (
-        <div>
-          <p className="mb-2 font-serif text-[17px] text-ink">연애 상태</p>
-          <div className="grid grid-cols-3 gap-2">
-            {([
-              ["solo", "솔로"],
-              ["dating", "연애중"],
-              ["other", "기타"],
-            ] as const).map(([k, label]) => (
-              <button
-                key={k}
-                type="button"
-                onClick={() => setLoveStatus(k)}
-                className={`h-11 rounded-xl text-[14px] ${
-                  loveStatus === k
-                    ? "bg-cta text-white"
-                    : "bg-white/70 ring-1 ring-black/10"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {product.needsPartner ? (
-        <PersonFields
-          value={partner}
-          onChange={setPartner}
-          title="그 사람의 사주"
-          namePlaceholder="상대 이름"
-        />
-      ) : null}
+      <PersonFields value={me} onChange={setMe} title="네 사주" namePlaceholder="이름부터 대라" />
 
       <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3">
         <button
@@ -279,7 +235,7 @@ export function BirthForm({ product }: { product: Product }) {
           disabled={!ok}
           className="cta-dark h-12 w-full rounded-full text-[15px]"
         >
-          다음으로
+          때를 맡긴다
         </button>
       </div>
     </form>

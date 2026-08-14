@@ -411,17 +411,9 @@ export function buildReading(
 
   let sections: ReadingSection[] = [unlockedTrait, unlockedYear, lockedWealth, lockedLove, lockedCareer, lockedDecade];
 
-  if (product.slug === "yeonae") {
-    sections = [unlockedTrait, lockedLove, unlockedYear, lockedWealth, lockedCareer, lockedDecade];
-  } else if (product.slug === "jaemul") {
+  if (product.slug === "jaemul") {
     sections = [unlockedTrait, lockedWealth, unlockedYear, lockedLove, lockedCareer, lockedDecade];
-  } else if (product.slug === "marriage") {
-    sections = [unlockedTrait, lockedLove, unlockedYear, lockedWealth, lockedCareer, lockedDecade];
-  } else if (product.slug === "shinjeom") {
-    sections = [unlockedTrait, unlockedYear, lockedLove, lockedWealth, lockedCareer, lockedDecade];
   } else if (product.slug === "today") {
-    sections = [unlockedTrait, unlockedYear];
-  } else if (product.slug === "rank") {
     sections = [unlockedTrait, unlockedYear];
   }
 
@@ -434,19 +426,7 @@ export function buildReading(
   if (product.slug === "today") {
     reading.today = todayText(saju, now);
   }
-  if (product.slug === "rank") {
-    reading.rank = rankOf(saju);
-  }
-  if (product.slug === "gunghap" && input.partner) {
-    const other = computeSaju(input.partner, now);
-    const g = gunghapScore(saju, other);
-    reading.gunghap = {
-      partnerName: input.partner.name,
-      partnerGanji: other.pillars.find((p) => p.key === "day")?.ganjiHanja ?? "",
-      score: paid ? g.score : Math.round(g.score * 0.4),
-      paragraphs: paid ? g.paragraphs : [g.paragraphs[0], "상세 궁합 문장은 결제 후 열립니다."],
-    };
-  }
+  // rank / gunghap products removed — engine helpers stay unused
 
   return reading;
 }

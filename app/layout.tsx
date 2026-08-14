@@ -18,19 +18,18 @@ const serif = Noto_Serif_KR({
 
 export const metadata: Metadata = {
   title: {
-    default: "월하당 — 내 사주를 보다",
-    template: "%s | 월하당",
+    default: "터줏 김선생 — 막힌 한 군데",
+    template: "%s | 터줏 김선생",
   },
-  description:
-    "정통 만세력으로 읽는 웹툰 사주. 연애, 재물, 인생의 흐름을 캐릭터가 읽어 줍니다.",
-  applicationName: "월하당",
+  description: "인생이 안 풀린 게 아니라, 한 군데가 막혀 있던 겁니다.",
+  applicationName: "터줏 김선생",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#f6f0e4",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
