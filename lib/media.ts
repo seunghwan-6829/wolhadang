@@ -23,7 +23,7 @@ export const CUT_STILL = {
   p1: KIM_STILL.face,
   p2: KIM_STILL.hands,
   p3: KIM_STILL.face,
-  oheng: KIM_STILL.oheng,
+  oheng: KIM_STILL.hands,
   asked: KIM_STILL.hands,
   teaser: KIM_STILL.hands,
   teaser2: KIM_STILL.face,

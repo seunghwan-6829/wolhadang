@@ -355,7 +355,7 @@ export function BirthForm({
   return (
     <>
       <BackBar href={backHref} light={dark} fixed />
-      <form onSubmit={onSubmit} className={dark ? "space-y-4 pb-2" : "space-y-8 pb-28"}>
+      <form onSubmit={onSubmit} className={dark ? "space-y-4 pb-36" : "space-y-8 pb-28"}>
         {phase === "birth" ? (
           <PersonFields
             value={me}

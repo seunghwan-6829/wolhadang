@@ -69,7 +69,7 @@ export function PayClient({ product }: { product: Product }) {
 
         <Link
           href={`/s/${product.slug}/story?${qs}`}
-          className="mt-8 block text-center text-[13px] text-white/50 underline"
+          className="mt-8 block text-center text-[14px] text-[#f3ead8] underline underline-offset-4"
         >
           앞장으로 돌아가기
         </Link>

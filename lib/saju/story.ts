@@ -151,7 +151,8 @@ function compact(text: string): string {
 
 function yearLine(saju: ComputedSaju): string {
   const y = saju.yearLuck;
-  return `올해 ${y.year}년, ${y.keyword} 기운이다. ${y.ganjiKo}가 네 일간을 건드린다.`;
+  const clean = String(y.keyword).replace(/^\d{4}\s*[·.\-]\s*/, "").trim() || "흐름";
+  return `올해는 ${clean} 기운이다. ${y.ganjiKo}가 네 일간을 건드린다.`;
 }
 
 export function buildStoryCuts(
