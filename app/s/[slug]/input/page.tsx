@@ -22,8 +22,8 @@ export default async function InputPage({ params }: Props) {
   return (
     <div className="lock-screen relative h-dvh overflow-hidden bg-[#161412]">
       <FrameMedia src={KIM_STILL.gate} fill blur kenBurns={false} />
-      <main className="relative z-10 flex h-dvh flex-col overflow-hidden px-4 pb-[max(88px,calc(72px+env(safe-area-inset-bottom)))] pt-14">
-        <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl bg-black/65 px-4 pt-5 pb-36 backdrop-blur">
+      <main className="relative z-10 flex h-dvh flex-col overflow-hidden px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-14">
+        <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl bg-black/65 px-4 py-5 backdrop-blur">
           <p className="cut-kicker keep-all pl-10">{product.character}</p>
           <h1 className="keep-all mt-2 font-serif text-[22px] leading-snug text-[#f3ead8] [text-shadow:0_2px_14px_rgba(0,0,0,0.75)]">
             {"태어난 때를 정확히 말해야\n막힌 곳이 보여."}
