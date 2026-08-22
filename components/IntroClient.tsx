@@ -18,22 +18,21 @@ export function IntroClient({ product }: { product: Product }) {
   }
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#161412]">
+    <div className="relative h-dvh overflow-hidden bg-[#161412]">
       <FrameMedia
         src={product.funnel}
+        videoSrc={product.video || product.videoBg}
         alt={product.character}
+        fill
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
         <BackBar href={`/s/${product.slug}`} light />
         <div className="absolute inset-x-0 bottom-0 px-6 pb-[max(28px,env(safe-area-inset-bottom))]">
-          <p className="font-serif text-[22px] leading-snug text-[#f3ead8]">
-            “{quote}”
-          </p>
-          <p className="mt-2 text-[13px] text-white/60">{product.character}</p>
+          <p className="cut-quote text-[24px] leading-snug">“{quote}”</p>
+          <p className="cut-speaker">{product.character}</p>
           <button
             type="button"
             onClick={next}
-            className="mt-6 h-12 w-full rounded-full bg-[#f3ead8] text-[15px] font-semibold text-ink"
+            className="pill-cream mt-6 h-12 w-full rounded-full text-[15px]"
           >
             {btn}
           </button>

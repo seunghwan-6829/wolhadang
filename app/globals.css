@@ -47,6 +47,7 @@ body {
       rgba(80, 50, 20, 0.018) 3px
     );
   position: relative;
+  overflow-x: hidden;
   box-shadow: 0 0 48px rgba(0, 0, 0, 0.08);
 }
 
@@ -55,9 +56,116 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
   object-position: center;
   pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.frame-media-contain {
+  object-fit: contain;
+}
+.frame-media-cover {
+  object-fit: cover;
+}
+
+@keyframes kenburns {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(-1.2%, -1%, 0);
+  }
+}
+.kenburns {
+  animation: kenburns 22s ease-in-out infinite alternate;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.snap-y-mandatory {
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+.snap-cut {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.cut-kicker {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: rgba(243, 234, 216, 0.62);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.75);
+}
+.cut-quote {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #f3ead8;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.95);
+}
+.cut-speaker {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+}
+
+.underline-input-light {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(243, 234, 216, 0.35);
+  background: transparent;
+  border-radius: 0;
+  padding: 10px 2px;
+  font-size: 16px;
+  color: #f3ead8;
+  outline: none;
+}
+.underline-input-light:focus {
+  border-bottom-color: #f3ead8;
+  box-shadow: none;
+}
+.underline-input-light:disabled {
+  opacity: 0.4;
+}
+.underline-input-light::placeholder {
+  color: rgba(243, 234, 216, 0.35);
+}
+select.underline-input-light {
+  appearance: none;
+  background-color: transparent;
+  background-image: linear-gradient(45deg, transparent 50%, #f3ead8 50%),
+    linear-gradient(135deg, #f3ead8 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 50%,
+    calc(100% - 7px) 50%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+}
+select.underline-input-light option {
+  color: #14110e;
+  background: #f6f0e4;
+}
+
+.pill-cream {
+  background: #f3ead8;
+  color: #14110e;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.pill-cream:disabled {
+  background: rgba(243, 234, 216, 0.28);
+  color: rgba(243, 234, 216, 0.45);
 }
 
 .snap-row {

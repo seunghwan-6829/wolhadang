@@ -5,6 +5,7 @@ export type StoryCut = {
   id: string;
   type: "cover" | "dialogue" | "splash" | "oheng" | "myeongshik";
   image?: string;
+  video?: string;
   speaker?: string;
   text: string;
   sub?: string;
@@ -129,6 +130,8 @@ export function buildStoryCuts(
   const name = saju.input.name;
   const v = voiceOf(product.character);
   const img = product.story || product.funnel;
+  const vid = product.video || product.videoBg;
+  const vidAlt = product.videoBg || product.video;
   const day = dayPillar(saju);
   const unlocked = paid || product.price <= 0;
   const cuts: StoryCut[] = [];
@@ -137,6 +140,7 @@ export function buildStoryCuts(
     id: "cover",
     type: "cover",
     image: img,
+      video: vid,
     name,
     speaker: product.character,
     productTitle: `${product.character} · ${product.shortName}`,
@@ -148,6 +152,7 @@ export function buildStoryCuts(
     id: "wait",
     type: "dialogue",
     image: img,
+      video: vid,
     speaker: product.character,
     text: v.wait(name),
     tall: true,
@@ -157,6 +162,7 @@ export function buildStoryCuts(
     id: "unfold",
     type: "dialogue",
     image: img,
+      video: vid,
     speaker: product.character,
     text: v.unfold,
     tall: true,
@@ -165,6 +171,8 @@ export function buildStoryCuts(
   cuts.push({
     id: "splash",
     type: "splash",
+    image: img,
+    video: vidAlt,
     hanja: `${day.stemHanja}${day.branchHanja}`,
     hanjaKo: `${day.stemKo}${day.branchKo}`,
     element: saju.dayMasterElement,
@@ -182,6 +190,7 @@ export function buildStoryCuts(
     id: "p1",
     type: "dialogue",
     image: img,
+      video: vid,
     speaker: product.character,
     text: `${v.traitLead}\n\n${personalityBits[0] ?? traitBits[0] ?? ""}`,
     tall: true,
@@ -191,6 +200,7 @@ export function buildStoryCuts(
     id: "p2",
     type: "dialogue",
     image: img,
+      video: vid,
     speaker: product.character,
     text: personalityBits[1] ?? traitBits[0] ?? v.more,
     tall: false,
@@ -200,6 +210,7 @@ export function buildStoryCuts(
     id: "p3",
     type: "dialogue",
     image: img,
+      video: vid,
     speaker: product.character,
     text: traitBits[0] ?? v.more,
     tall: false,
@@ -209,6 +220,8 @@ export function buildStoryCuts(
   cuts.push({
     id: "oheng",
     type: "oheng",
+    image: img,
+      video: vid,
     speaker: product.character,
     text: v.oheng(oh.many, oh.few, oh.body),
     sub: `${saju.strength} · 일간 ${saju.dayMasterHanja}${saju.dayMaster}`,
@@ -222,6 +235,7 @@ export function buildStoryCuts(
       id: "today1",
       type: "dialogue",
       image: img,
+      video: vid,
       speaker: product.character,
       text: reading.today.title,
       sub: "오늘의 한 줄",
@@ -232,35 +246,35 @@ export function buildStoryCuts(
         id: `today-${i}`,
         type: "dialogue",
         image: img,
+      video: vid,
         speaker: product.character,
         text: p,
         tall: false,
       });
     }
   } else {
-    const love = sec(reading, "love");
-    const loveText = love?.paragraphs[0];
-
     cuts.push({
       id: "t1",
       type: "dialogue",
       image: img,
+      video: vid,
       speaker: product.character,
       text:
         product.slug === "jaemul"
           ? `${v.teaserLead}\n\n돈은 성격이 있다. 네 사주가 부르는 돈의 결부터.`
-          : `${v.teaserLead}\n\n${loveText ?? "인연은 구하면 달아나고, 빛나면 앉는다."}`,
+          : `${v.teaserLead}\n\n인연은 구하면 달아나고, 빛나면 앉는다.`,
       tall: false,
     });
     cuts.push({
       id: "t2",
       type: "dialogue",
       image: img,
+        video: vid,
       speaker: product.character,
       text:
         product.slug === "jaemul"
           ? "버는 달과 잠그는 달을 달력에 표시해 둬. 그게 첫 장이다."
-          : (love?.paragraphs[1] ?? "조급히 자리를 채우지 마라. 숨이 편한 사람만 남겨."),
+          : "조급히 자리를 채우지 마라. 숨이 편한 사람만 남겨.",
       tall: false,
     });
   }
@@ -283,6 +297,7 @@ export function buildStoryCuts(
         id: row.id,
         type: "dialogue",
         image: img,
+      video: vid,
         speaker: product.character,
         text: unlocked ? body || row.fallback : `${v.lockLine}\n\n${body || row.fallback}`,
         sub: s?.title,
@@ -296,6 +311,8 @@ export function buildStoryCuts(
     cuts.push({
       id: "myeongshik",
       type: "myeongshik",
+      image: img,
+        video: vid,
       speaker: product.character,
       text: "명식이다. 가사가 아니라 악보다.",
       tall: false,

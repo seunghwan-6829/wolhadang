@@ -12,12 +12,18 @@ const MENU: [string, string][] = [
   ["/archive", "보관함"],
 ];
 
-export function Header() {
+export function Header({ overlay = false }: { overlay?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
+    <header
+      className={
+        overlay
+          ? "absolute inset-x-0 top-0 z-40 bg-gradient-to-b from-black/60 to-transparent"
+          : "sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur"
+      }
+    >
       <div className="flex h-12 items-center justify-between px-3">
-        <Logo size="sm" />
+        <Logo size="sm" light={overlay} />
         <button
           type="button"
           aria-label="메뉴"
@@ -25,9 +31,9 @@ export function Header() {
           className="grid h-10 w-10 place-items-center"
         >
           <span className="flex flex-col gap-[5px]">
-            <i className="block h-[1.5px] w-[18px] bg-ink" />
-            <i className="block h-[1.5px] w-[18px] bg-ink" />
-            <i className="block h-[1.5px] w-[18px] bg-ink" />
+            <i className={`block h-[1.5px] w-[18px] ${overlay ? "bg-[#f3ead8]" : "bg-ink"}`} />
+            <i className={`block h-[1.5px] w-[18px] ${overlay ? "bg-[#f3ead8]" : "bg-ink"}`} />
+            <i className={`block h-[1.5px] w-[18px] ${overlay ? "bg-[#f3ead8]" : "bg-ink"}`} />
           </span>
         </button>
       </div>
@@ -75,7 +81,7 @@ export function BackBar({
         href={href}
         aria-label="뒤로"
         className={`grid h-10 w-10 place-items-center rounded-full ${
-          light ? "text-white" : "text-ink"
+          light ? "text-[#f3ead8]" : "text-ink"
         }`}
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
