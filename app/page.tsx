@@ -9,7 +9,7 @@ export default function HomePage() {
       product={flagship}
       title={HERO_LINE}
       ctaHref={`/s/${flagship.slug}/intro`}
-      ctaLabel="내 사주팔자 바로 확인하기"
+      ctaLabel="내 사주부터 보자"
     />
   );
 }

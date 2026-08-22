@@ -24,6 +24,7 @@ const EL_CLASS: Record<Element, string> = {
 
 /** Reserved space so cover/dialogue never sit under the fixed next-cut bar. */
 const CUT_PAD = "pb-[calc(108px+env(safe-area-inset-bottom))]";
+const CTA_PAD = "pb-[max(20px,env(safe-area-inset-bottom))]";
 
 function readBirth(sp: URLSearchParams): BirthInput | null {
   const fromQuery = queryToBirth(sp);
@@ -90,7 +91,7 @@ export function StoryReader({
   if (phase === "missing") {
     return (
       <div className="lock-screen relative flex h-dvh flex-col items-center justify-center overflow-hidden bg-[#161412] px-6 text-center [overscroll-behavior:none] [touch-action:none]">
-        <FrameMedia src={product.story} videoSrc={product.video} fill />
+        <FrameMedia src={product.story} fill kenBurns={false} />
         <div className="relative z-10">
           <p className="cut-quote keep-all">태어난 때가 없다</p>
           <p className="keep-all mt-2 text-sm text-white/60">때를 정확히 말해야 막힌 곳이 보인다.</p>
@@ -111,7 +112,6 @@ export function StoryReader({
         name={sp.get("n") || product.character}
         character={product.character}
         still={product.story}
-        videoSrc={product.video}
       />
     );
   }
@@ -174,14 +174,14 @@ function OneCutStory({
         <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
       </div>
 
-      <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-black via-black/85 to-transparent px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-8">
+      <div className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-black via-black/85 to-transparent px-4 ${CTA_PAD} pt-8`}>
         <p className="keep-all mb-2 text-center text-[12px] tracking-wide text-[#f3ead8]/70">
           {safeIndex + 1}/{total}
         </p>
         {showPay ? (
           <Link
             href={payHref}
-            className="cta-dark flex h-12 items-center justify-center rounded-full text-[15px] [text-shadow:none]"
+            className="pill-cream flex h-12 items-center justify-center rounded-full text-[15px]"
           >
             복채를 낸다 {formatPrice(product.price)}
           </Link>
@@ -202,7 +202,8 @@ function OneCutStory({
 function mediaOf(cut: StoryCut, product: Product) {
   return {
     src: cut.image ?? product.story ?? product.funnel,
-    videoSrc: cut.video ?? product.video ?? product.videoBg,
+    videoSrc: cut.video || undefined,
+    objectPosition: cut.objectPosition,
   };
 }
 
@@ -218,11 +219,11 @@ function CutInner({
   payHref: string;
 }) {
   const locked = Boolean(cut.lock);
-  const { src, videoSrc } = mediaOf(cut, product);
+  const { src, videoSrc, objectPosition } = mediaOf(cut, product);
 
   if (cut.type === "cover") {
     return (
-      <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
+      <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill objectPosition={objectPosition}>
         <BackBar href={`/s/${product.slug}/input`} light />
         <div className={`absolute inset-x-0 bottom-0 px-6 ${CUT_PAD}`}>
           <p className="cut-kicker keep-all">{cut.name}</p>
@@ -235,8 +236,14 @@ function CutInner({
   if (cut.type === "splash") {
     const el = cut.element ?? "금";
     return (
-      <div className={`${EL_CLASS[el]} relative h-full min-h-[100dvh] w-full`}>
-        <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
+      <div className={`${EL_CLASS[el]} relative h-full min-h-[100dvh] w-full bg-[#161412]`}>
+        <FrameMedia
+          src={src}
+          alt={product.character}
+          fill
+          kenBurns={false}
+          objectPosition={objectPosition ?? "center"}
+        >
           <div
             className={`absolute inset-0 flex flex-col items-center justify-center px-6 text-center ${CUT_PAD}`}
           >
@@ -248,12 +255,12 @@ function CutInner({
               {cut.hanja}
             </p>
             <p className="cut-quote keep-all mt-3 text-[20px]">{cut.hanjaKo}</p>
-            <p className="keep-all mt-1 text-[13px] text-white/60 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-              {cut.sub}
-            </p>
-            <p className="cut-quote keep-all mt-8 max-w-[300px] text-[18px] font-semibold leading-7">
-              {cut.text}
-            </p>
+            <div className="mt-6 max-w-[320px] rounded-2xl bg-black/75 px-5 py-4 ring-1 ring-white/10 backdrop-blur-md">
+              <p className="keep-all text-[13px] text-white/70">{cut.sub}</p>
+              <p className="cut-quote keep-all mt-2 text-[17px] font-semibold leading-7">
+                {cut.text}
+              </p>
+            </div>
           </div>
         </FrameMedia>
       </div>
@@ -264,9 +271,16 @@ function CutInner({
     const count = reading.saju.elementCount;
     const max = Math.max(...Object.values(count), 1);
     return (
-      <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
-        <div className="absolute inset-x-0 top-0 px-5 pt-14">
-          <div className="rounded-2xl bg-black/70 backdrop-blur-md px-4 py-4 ring-1 ring-white/10">
+      <FrameMedia
+        src={src}
+        videoSrc={videoSrc}
+        alt={product.character}
+        fill
+        kenBurns={false}
+        objectPosition={objectPosition ?? "top"}
+      >
+        <div className={`absolute inset-x-0 bottom-0 px-5 ${CUT_PAD}`}>
+          <div className="mb-3 rounded-2xl bg-black/70 px-4 py-4 ring-1 ring-white/10 backdrop-blur-md">
             <p className="cut-kicker keep-all">오행</p>
             <div className="mt-4 space-y-3">
               {(Object.entries(count) as [Element, number][]).map(([el, n]) => (
@@ -294,8 +308,6 @@ function CutInner({
               ))}
             </div>
           </div>
-        </div>
-        <div className={`absolute inset-x-0 bottom-0 px-5 ${CUT_PAD}`}>
           <Bubble speaker={cut.speaker} text={cut.text} />
         </div>
       </FrameMedia>
@@ -304,7 +316,7 @@ function CutInner({
 
   if (cut.type === "myeongshik") {
     return (
-      <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
+      <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill objectPosition={objectPosition}>
         <div className={`absolute inset-x-0 top-0 px-4 pt-14 ${CUT_PAD}`}>
           <p className="cut-quote keep-all text-[20px]">{cut.text}</p>
           <div className="mt-5">
@@ -322,7 +334,7 @@ function CutInner({
   }
 
   return (
-    <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
+    <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill objectPosition={objectPosition} kenBurns={cut.id === "paywall" ? false : undefined}>
       <div
         className={`absolute inset-x-0 bottom-0 px-5 ${CUT_PAD} ${locked ? "locked-blur" : ""}`}
       >
@@ -336,7 +348,7 @@ function CutInner({
           <p className="cut-quote keep-all mt-3 text-[20px]">더 보려면 복채가 필요하다</p>
           <Link
             href={payHref}
-            className="cta-dark mt-5 inline-flex h-11 items-center rounded-full px-5 text-[14px]"
+            className="pill-cream mt-5 inline-flex h-11 items-center rounded-full px-5 text-[14px]"
           >
             복채를 낸다 {formatPrice(product.price)}
           </Link>

@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { flatLine, formatPrice, type Product } from "@/lib/data/products";
 import { PAID_STORAGE_PREFIX } from "@/lib/birth-query";
 import { BackBar } from "@/components/Header";
+import { FrameMedia } from "@/components/FrameMedia";
+import { KIM_STILL } from "@/lib/media";
 import { useState } from "react";
 
 export function PayClient({ product }: { product: Product }) {
@@ -26,26 +28,24 @@ export function PayClient({ product }: { product: Product }) {
   }
 
   return (
-    <div className="relative min-h-dvh bg-paper">
-      <BackBar href={`/s/${product.slug}/story?${qs}`} />
-      <main className="px-5 pb-16 pt-14">
-        <p className="text-[11px] tracking-widest text-sub">MOCK CHECKOUT</p>
-        <h1 className="mt-1 font-serif text-2xl text-ink">복채를 낸다 (데모)</h1>
-        <p className="mt-2 text-[13px] text-sub">
-          실제 결제는 없다. 버튼을 누르면 잠긴 장이 열린다.
+    <div className="lock-screen relative min-h-dvh overflow-hidden bg-[#161412]">
+      <FrameMedia src={KIM_STILL.back} fill kenBurns={false} />
+      <BackBar href={`/s/${product.slug}/story?${qs}`} light />
+      <main className="relative z-10 px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
+        <p className="cut-kicker keep-all">복채</p>
+        <h1 className="cut-quote keep-all mt-2 text-[24px] leading-snug">
+          더 보려면 복채가 필요하다.
+        </h1>
+        <p className="keep-all mt-2 text-[13px] text-white/60 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+          앞장은 여기까지다. 누르면 잠긴 장이 열린다.
         </p>
 
-        <div className="mt-6 flex gap-3 rounded-2xl border border-line bg-paper p-3">
-          <span className="relative h-20 w-[45px] shrink-0 overflow-hidden rounded-lg bg-[#161412]">
-            <span className="absolute inset-0 flex items-center justify-center font-serif text-[10px] text-[#f3ead8]">
-              墨
-            </span>
-          </span>
-          <div className="min-w-0">
-            <p className="font-serif text-[16px] text-ink">{product.name}</p>
-            <p className="mt-1 text-[13px] text-sub">{flatLine(product.hook)}</p>
-            <p className="mt-2 text-[15px] font-bold">{formatPrice(product.price)}</p>
-          </div>
+        <div className="mt-6 rounded-2xl bg-black/65 px-4 py-4 ring-1 ring-white/10 backdrop-blur-md">
+          <p className="font-serif text-[16px] text-[#f3ead8]">{product.name}</p>
+          <p className="keep-all mt-1 text-[13px] text-white/55">{flatLine(product.hook)}</p>
+          <p className="mt-3 font-serif text-[18px] text-[#f3ead8]">
+            {formatPrice(product.price)}
+          </p>
         </div>
 
         <div className="mt-6 space-y-3">
@@ -55,21 +55,21 @@ export function PayClient({ product }: { product: Product }) {
             onClick={() => mockPay("kakao")}
             className="flex h-12 w-full items-center justify-center rounded-full bg-[#FEE500] text-[15px] font-bold text-[#191600]"
           >
-            {busy === "kakao" ? "연결 중…" : "카카오페이 (데모)"}
+            {busy === "kakao" ? "열고 있다…" : "카카오로 낸다"}
           </button>
           <button
             type="button"
             disabled={Boolean(busy)}
             onClick={() => mockPay("card")}
-            className="cta-dark flex h-12 w-full items-center justify-center rounded-full text-[15px]"
+            className="pill-cream flex h-12 w-full items-center justify-center rounded-full text-[15px]"
           >
-            {busy === "card" ? "승인 중…" : "신용/체크카드 (데모)"}
+            {busy === "card" ? "열고 있다…" : "카드로 낸다"}
           </button>
         </div>
 
         <Link
           href={`/s/${product.slug}/story?${qs}`}
-          className="mt-8 block text-center text-[13px] text-sub underline"
+          className="mt-8 block text-center text-[13px] text-white/50 underline"
         >
           앞장으로 돌아가기
         </Link>

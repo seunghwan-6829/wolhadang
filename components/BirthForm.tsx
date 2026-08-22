@@ -80,12 +80,14 @@ function PersonFields({
   title,
   namePlaceholder,
   tone,
+  showGenderError,
 }: {
   value: PersonDraft;
   onChange: (v: PersonDraft) => void;
   title: string;
   namePlaceholder: string;
   tone: "dark" | "paper";
+  showGenderError: boolean;
 }) {
   const maxDay = daysInMonth(value.year, value.month, value.calendar === "lunar");
   const years = useMemo(() => {
@@ -143,7 +145,7 @@ function PersonFields({
             </label>
           ))}
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="space-y-2">
           <select
             value={value.year || ""}
             onChange={(e) => set({ year: Number(e.target.value) || 0 })}
@@ -157,32 +159,34 @@ function PersonFields({
               </option>
             ))}
           </select>
-          <select
-            value={value.month || ""}
-            onChange={(e) => set({ month: Number(e.target.value) || 0 })}
-            className={field}
-            aria-label="월"
-          >
-            <option value="">월</option>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-              <option key={m} value={m}>
-                {m}월
-              </option>
-            ))}
-          </select>
-          <select
-            value={value.day ? Math.min(value.day, maxDay) : ""}
-            onChange={(e) => set({ day: Number(e.target.value) || 0 })}
-            className={field}
-            aria-label="일"
-          >
-            <option value="">일</option>
-            {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
-              <option key={d} value={d}>
-                {d}일
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={value.month || ""}
+              onChange={(e) => set({ month: Number(e.target.value) || 0 })}
+              className={field}
+              aria-label="월"
+            >
+              <option value="">월</option>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                <option key={m} value={m}>
+                  {m}월
+                </option>
+              ))}
+            </select>
+            <select
+              value={value.day ? Math.min(value.day, maxDay) : ""}
+              onChange={(e) => set({ day: Number(e.target.value) || 0 })}
+              className={field}
+              aria-label="일"
+            >
+              <option value="">일</option>
+              {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>
+                  {d}일
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         {value.calendar === "lunar" ? (
           <label className={check}>
@@ -242,9 +246,9 @@ function PersonFields({
             </button>
           ))}
         </div>
-        {value.gender === "" ? (
-          <p className={`keep-all mt-2 text-[12px] ${dark ? "text-white/55" : "text-sub"}`}>
-            성별을 고르라.
+        {showGenderError ? (
+          <p className="keep-all mt-2 text-[12px] text-red-400">
+            ⚠ 성별을 고르라.
           </p>
         ) : null}
       </div>
@@ -260,6 +264,13 @@ function validPerson(p: PersonDraft): boolean {
   return named && gendered && dated && timed;
 }
 
+function readyExceptGender(p: PersonDraft): boolean {
+  const named = p.name.trim().length >= 1;
+  const dated = p.year >= YEAR_MIN && p.month >= 1 && p.day >= 1;
+  const timed = p.hourUnknown || p.time.trim().length > 0;
+  return named && dated && timed;
+}
+
 export function BirthForm({
   product,
   tone = "paper",
@@ -273,7 +284,9 @@ export function BirthForm({
   const [me, setMe] = useState<PersonDraft>(emptyPerson);
   const [question, setQuestion] = useState("");
   const [ready, setReady] = useState(false);
+  const [submittedAttempt, setSubmittedAttempt] = useState(false);
   const ok = validPerson(me);
+  const canClick = readyExceptGender(me);
 
   useEffect(() => {
     const draft = readInputDraft();
@@ -322,6 +335,7 @@ export function BirthForm({
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (phase === "birth") {
+      setSubmittedAttempt(true);
       if (!ok) return;
       writeInputDraft(me, question);
       router.push(`/s/${product.slug}/input?step=ask`);
@@ -349,6 +363,7 @@ export function BirthForm({
             title="네 사주"
             namePlaceholder="이름부터 대라"
             tone={tone}
+            showGenderError={submittedAttempt && me.gender === ""}
           />
         ) : (
           <div>
@@ -361,13 +376,13 @@ export function BirthForm({
             <textarea
               value={question}
               maxLength={200}
-              rows={dark ? 4 : 5}
+              rows={8}
               placeholder="올해 이직해도 되나, 이런 것."
               onChange={(e) => setQuestion(e.target.value.slice(0, 200))}
               className={
                 dark
-                  ? "mt-4 w-full resize-none rounded-xl bg-white/8 px-3 py-3 text-[15px] text-[#f3ead8] outline-none ring-1 ring-white/20 placeholder:text-white/30"
-                  : "mt-4 w-full resize-none rounded-xl bg-white px-3 py-3 text-[15px] text-ink outline-none ring-1 ring-black/10"
+                  ? "mt-4 min-h-[220px] w-full resize-none rounded-xl bg-white/8 px-3 py-3 text-[15px] text-[#f3ead8] outline-none ring-1 ring-white/20 placeholder:text-white/30"
+                  : "mt-4 min-h-[220px] w-full resize-none rounded-xl bg-white px-3 py-3 text-[15px] text-ink outline-none ring-1 ring-black/10"
               }
             />
             <p className={dark ? "mt-2 text-right text-[12px] text-white/45" : "mt-2 text-right text-[12px] text-sub"}>
@@ -377,13 +392,13 @@ export function BirthForm({
         )}
 
         <div
-          className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 ${bar}`}
+          className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 px-4 pb-[max(20px,env(safe-area-inset-bottom))] pt-6 ${bar}`}
         >
           {phase === "ask" ? (
             <button
               type="button"
               onClick={() => goStory("")}
-              className={`mb-2 h-11 w-full text-[14px] ${
+              className={`mt-0 mb-6 h-11 w-full text-[14px] ${
                 dark ? "text-white/60" : "text-sub"
               }`}
             >
@@ -392,7 +407,7 @@ export function BirthForm({
           ) : null}
           <button
             type="submit"
-            disabled={phase === "birth" && !ok}
+            disabled={phase === "birth" && !canClick}
             className={`h-12 w-full rounded-full text-[15px] ${
               tone === "dark" ? "pill-cream" : "cta-dark"
             }`}

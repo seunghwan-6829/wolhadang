@@ -17,7 +17,7 @@ export default async function PayPage({ params }: Props) {
   const product = getProduct(slug);
   if (!product) notFound();
   return (
-    <Suspense fallback={<p className="p-8 text-center text-sub">불러오는 중…</p>}>
+    <Suspense fallback={<p className="p-8 text-center text-white/50">불러오는 중…</p>}>
       <PayClient product={product} />
     </Suspense>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Seal } from "./Seal";
 
 type Props = {
   src?: string;
@@ -14,6 +13,7 @@ type Props = {
   fit?: "cover" | "contain";
   kenBurns?: boolean;
   gradient?: boolean;
+  objectPosition?: string;
   children?: ReactNode;
 };
 
@@ -27,6 +27,7 @@ export function FrameMedia({
   fit = "cover",
   kenBurns,
   gradient = true,
+  objectPosition,
   children,
 }: Props) {
   const [vidOk, setVidOk] = useState(false);
@@ -36,6 +37,7 @@ export function FrameMedia({
   const showVideo = Boolean(videoSrc) && !vidFailed;
   const burn = kenBurns !== false && !vidOk && !blur;
   const fitClass = fit === "contain" ? "frame-media-contain" : "frame-media-cover";
+  const pos = objectPosition ? { objectPosition } : undefined;
 
   return (
     <div
@@ -43,18 +45,12 @@ export function FrameMedia({
         fill ? "absolute inset-0" : "relative h-dvh w-full"
       } overflow-hidden bg-[#161412] ${className}`}
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#161412]">
-        <Seal size={64} />
-        <p className="mt-4 font-serif text-[18px] tracking-wide text-[#f3ead8]">
-          터줏 김선생
-        </p>
-      </div>
-
       {src && !vidOk && !imgFailed ? (
         <img
           src={src}
           alt={alt}
           onError={() => setImgFailed(true)}
+          style={pos}
           className={`frame-media ${fitClass} ${blur ? "blur-2xl scale-110" : ""} ${
             burn ? "kenburns" : ""
           }`}
@@ -80,6 +76,7 @@ export function FrameMedia({
             setVidOk(false);
           }}
           onLoadedData={() => setVidOk(true)}
+          style={pos}
           className={`frame-media ${fitClass} ${blur ? "blur-2xl scale-110" : ""} ${
             vidOk ? "opacity-100" : "opacity-0"
           }`}

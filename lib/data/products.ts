@@ -55,7 +55,7 @@ export const PRODUCTS: Product[] = [
     story: KIM_STORY,
     video: KIM_VIDEO,
     videoBg: KIM_BG,
-    cta: "내 사주팔자 바로 확인하기",
+    cta: "내 사주부터 보자",
     introLines: [
       "네 사주,\n안 풀린 게 아니야.",
       "한 군데가 막혀 있어.",
@@ -64,7 +64,7 @@ export const PRODUCTS: Product[] = [
     introReplies: [
       "그래서?",
       "그래서, 어디가 막혔는데.",
-      "좋아, 내 이름은..",
+      "좋아, 내 이름은…",
     ],
     landingCuts: [
       "왔구나.",
@@ -104,7 +104,7 @@ export const PRODUCTS: Product[] = [
     ],
     introReplies: [
       "그래, 오늘 것만 보자.",
-      "좋아, 내 이름은..",
+      "좋아, 내 이름은…",
     ],
     landingCuts: [
       "왔구나.",
@@ -135,14 +135,14 @@ export const PRODUCTS: Product[] = [
     story: KIM_STORY,
     video: KIM_VIDEO,
     videoBg: KIM_BG,
-    cta: "내 재물운 바로 확인하기",
+    cta: "내 재물부터 보자",
     introLines: [
       "돈 얘기는 서두르면 달아난다.\n앉어.",
       "운명을 펴기 전에,\n이름부터 대라.",
     ],
     introReplies: [
       "그래, 돈 얘기부터.",
-      "좋아, 내 이름은..",
+      "좋아, 내 이름은…",
     ],
     landingCuts: [
       "왔구나.",

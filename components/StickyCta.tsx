@@ -18,7 +18,7 @@ export function StickyCta({
   const subCls = tone === "dark" ? "text-white/55" : "text-sub";
   return (
     <div
-      className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 ${wrap} px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-8`}
+      className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 ${wrap} px-4 pb-[max(20px,env(safe-area-inset-bottom))] pt-8`}
     >
       {sub ? (
         <p className={`mb-2 text-center text-[12px] ${subCls}`}>{sub}</p>

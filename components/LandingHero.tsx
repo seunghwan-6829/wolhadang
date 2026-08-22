@@ -24,7 +24,7 @@ export function LandingHero({
         fill
       >
         <Header overlay />
-        <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(28px,env(safe-area-inset-bottom))] pt-[18vh]">
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-[18vh]">
           <p className="cut-kicker">{product.character}</p>
           <h1 className="cut-quote keep-all mt-2 max-w-[20em] text-[24px] leading-snug sm:text-[26px]">
             {title}
@@ -34,7 +34,7 @@ export function LandingHero({
           </p>
           <Link
             href={ctaHref}
-            className="cta-dark mt-3 flex h-12 items-center justify-center rounded-full text-[15px]"
+            className="pill-cream mt-3 flex h-12 items-center justify-center rounded-full text-[15px]"
           >
             {ctaLabel}
           </Link>
