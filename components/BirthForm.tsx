@@ -24,14 +24,15 @@ const emptyPerson = (): PersonDraft => ({
   gender: "",
   calendar: "solar",
   isLeapMonth: false,
-  year: 1995,
-  month: 8,
-  day: 15,
+  year: 0,
+  month: 0,
+  day: 0,
   hourUnknown: false,
-  time: "13:20",
+  time: "",
 });
 
 function daysInMonth(year: number, month: number, lunar: boolean): number {
+  if (year < YEAR_MIN || month < 1) return 31;
   if (lunar) return 30;
   return new Date(year, month, 0).getDate();
 }
@@ -107,11 +108,12 @@ function PersonFields({
         </div>
         <div className="grid grid-cols-3 gap-2">
           <select
-            value={value.year}
-            onChange={(e) => set({ year: Number(e.target.value) })}
+            value={value.year || ""}
+            onChange={(e) => set({ year: Number(e.target.value) || 0 })}
             className={field}
             aria-label="년"
           >
+            <option value="">년</option>
             {years.map((y) => (
               <option key={y} value={y}>
                 {y}년
@@ -119,11 +121,12 @@ function PersonFields({
             ))}
           </select>
           <select
-            value={value.month}
-            onChange={(e) => set({ month: Number(e.target.value) })}
+            value={value.month || ""}
+            onChange={(e) => set({ month: Number(e.target.value) || 0 })}
             className={field}
             aria-label="월"
           >
+            <option value="">월</option>
             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
               <option key={m} value={m}>
                 {m}월
@@ -131,11 +134,12 @@ function PersonFields({
             ))}
           </select>
           <select
-            value={Math.min(value.day, maxDay)}
-            onChange={(e) => set({ day: Number(e.target.value) })}
+            value={value.day ? Math.min(value.day, maxDay) : ""}
+            onChange={(e) => set({ day: Number(e.target.value) || 0 })}
             className={field}
             aria-label="일"
           >
+            <option value="">일</option>
             {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
               <option key={d} value={d}>
                 {d}일
@@ -159,7 +163,7 @@ function PersonFields({
         <p className={label}>태어난 시간</p>
         <input
           inputMode="numeric"
-          placeholder="13:20"
+          placeholder="시간 (예: 13:20)"
           value={value.time}
           disabled={value.hourUnknown}
           onChange={(e) => set({ time: e.target.value })}
@@ -201,13 +205,22 @@ function PersonFields({
             </button>
           ))}
         </div>
+        {value.gender === "" ? (
+          <p className={`keep-all mt-2 text-[12px] ${dark ? "text-white/55" : "text-sub"}`}>
+            성별을 고르라.
+          </p>
+        ) : null}
       </div>
     </fieldset>
   );
 }
 
 function validPerson(p: PersonDraft): boolean {
-  return p.name.trim().length >= 1 && (p.gender === "male" || p.gender === "female");
+  const named = p.name.trim().length >= 1;
+  const gendered = p.gender === "male" || p.gender === "female";
+  const dated = p.year >= YEAR_MIN && p.month >= 1 && p.day >= 1;
+  const timed = p.hourUnknown || p.time.trim().length > 0;
+  return named && gendered && dated && timed;
 }
 
 export function BirthForm({
@@ -224,7 +237,7 @@ export function BirthForm({
   const ok = validPerson(me);
 
   function toInput(p: PersonDraft): Omit<BirthInput, "loveStatus" | "partner"> {
-    const [hh, mm] = (p.time || "13:20").split(":").map(Number);
+    const [hh, mm] = (p.time || "0:0").split(":").map(Number);
     return {
       name: p.name.trim(),
       gender: p.gender === "male" ? "male" : "female",

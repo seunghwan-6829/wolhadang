@@ -22,6 +22,9 @@ const EL_CLASS: Record<Element, string> = {
   수: "el-water",
 };
 
+/** Reserved space so cover/dialogue never sit under the fixed next-cut bar. */
+const CUT_PAD = "pb-[calc(108px+env(safe-area-inset-bottom))]";
+
 function readBirth(sp: URLSearchParams): BirthInput | null {
   const fromQuery = queryToBirth(sp);
   if (fromQuery) return fromQuery;
@@ -50,7 +53,6 @@ export function StoryReader({
     skipAnim && initialReading ? "show" : "load",
   );
   const [reading, setReading] = useState<FullReading | null>(initialReading);
-  const [seenFree, setSeenFree] = useState(false);
   const qs = sp.toString();
 
   const paid = useMemo(() => {
@@ -85,23 +87,13 @@ export function StoryReader({
     return () => window.clearTimeout(t);
   }, [product, paid, sp, reading, skipAnim, phase]);
 
-  useEffect(() => {
-    if (phase !== "show") return;
-    const id = sp.get("cut");
-    if (!id) return;
-    const t = window.setTimeout(() => {
-      document.getElementById(`cut-${id}`)?.scrollIntoView({ behavior: "auto" });
-    }, 80);
-    return () => window.clearTimeout(t);
-  }, [phase, sp]);
-
   if (phase === "missing") {
     return (
-      <div className="relative flex h-dvh flex-col items-center justify-center overflow-hidden bg-[#161412] px-6 text-center">
+      <div className="lock-screen relative flex h-dvh flex-col items-center justify-center overflow-hidden bg-[#161412] px-6 text-center [overscroll-behavior:none] [touch-action:none]">
         <FrameMedia src={product.story} videoSrc={product.video} fill />
         <div className="relative z-10">
-          <p className="cut-quote">태어난 때가 없다</p>
-          <p className="mt-2 text-sm text-white/60">때를 정확히 말해야 막힌 곳이 보인다.</p>
+          <p className="cut-quote keep-all">태어난 때가 없다</p>
+          <p className="keep-all mt-2 text-sm text-white/60">때를 정확히 말해야 막힌 곳이 보인다.</p>
           <Link
             href={`/s/${product.slug}/input`}
             className="pill-cream mt-6 inline-flex h-12 items-center rounded-full px-6"
@@ -128,76 +120,81 @@ export function StoryReader({
   const focus = sp.get("cut");
   const viewCuts = focus ? cuts.filter((c) => c.id === focus) : cuts;
   const payHref = `/s/${product.slug}/pay?${qs}`;
-  const showPay = !paid && product.price > 0 && !focus;
-  const lastFreeId =
-    [...viewCuts].reverse().find((c) => !c.lock)?.id ?? viewCuts[viewCuts.length - 1]?.id;
 
   return (
-    <StoryScroll
+    <OneCutStory
       viewCuts={viewCuts}
       product={product}
       reading={reading}
       payHref={payHref}
-      showPay={showPay}
-      lastFreeId={lastFreeId}
-      seenFree={seenFree}
-      setSeenFree={setSeenFree}
+      paid={paid}
     />
   );
 }
 
-function StoryScroll({
+function OneCutStory({
   viewCuts,
   product,
   reading,
   payHref,
-  showPay,
-  lastFreeId,
-  seenFree,
-  setSeenFree,
+  paid,
 }: {
   viewCuts: StoryCut[];
   product: Product;
   reading: FullReading;
   payHref: string;
-  showPay: boolean;
-  lastFreeId?: string;
-  seenFree: boolean;
-  setSeenFree: (v: boolean) => void;
+  paid: boolean;
 }) {
+  const [index, setIndex] = useState(0);
+  const total = viewCuts.length;
+  const safeIndex = total === 0 ? 0 : Math.min(index, total - 1);
+  const cut = viewCuts[safeIndex];
+  const isLast = safeIndex >= total - 1;
+  const showPay = isLast && !paid && product.price > 0;
+
   useEffect(() => {
-    if (!showPay || seenFree || !lastFreeId) return;
-    const el = document.getElementById(`cut-${lastFreeId}`);
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) setSeenFree(true);
-      },
-      { threshold: 0.35 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [showPay, seenFree, lastFreeId, setSeenFree]);
+    setIndex((i) => (total === 0 ? 0 : Math.min(i, total - 1)));
+  }, [total]);
+
+  useEffect(() => {
+    const prevent = (e: Event) => e.preventDefault();
+    document.addEventListener("wheel", prevent, { passive: false });
+    document.addEventListener("touchmove", prevent, { passive: false });
+    return () => {
+      document.removeEventListener("wheel", prevent);
+      document.removeEventListener("touchmove", prevent);
+    };
+  }, []);
+
+  if (!cut) return null;
 
   return (
-    <div className="relative bg-[#161412]">
-      <div className={"webtoon-scroll" + (showPay && seenFree ? " pb-24" : "")}>
-        {viewCuts.map((cut) => (
-          <section key={cut.id} id={`cut-${cut.id}`} className="webtoon-cut">
-            <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
-          </section>
-        ))}
+    <div className="lock-screen relative h-dvh overflow-hidden bg-[#161412] [overscroll-behavior:none] [touch-action:none]">
+      <div className="absolute inset-0 overflow-hidden [overscroll-behavior:none] [touch-action:none]">
+        <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
       </div>
-      {showPay && seenFree ? (
-        <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-black via-black/85 to-transparent px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-8">
+
+      <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-black via-black/85 to-transparent px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-8">
+        <p className="keep-all mb-2 text-center text-[12px] tracking-wide text-[#f3ead8]/70">
+          {safeIndex + 1}/{total}
+        </p>
+        {showPay ? (
           <Link
             href={payHref}
             className="cta-dark flex h-12 items-center justify-center rounded-full text-[15px] [text-shadow:none]"
           >
             복채를 낸다 {formatPrice(product.price)}
           </Link>
-        </div>
-      ) : null}
+        ) : !isLast ? (
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.min(i + 1, total - 1))}
+            className="pill-cream flex h-12 w-full items-center justify-center rounded-full text-[15px]"
+          >
+            다음 컷
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -227,9 +224,9 @@ function CutInner({
     return (
       <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
         <BackBar href={`/s/${product.slug}/input`} light />
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-[calc(40px+env(safe-area-inset-bottom))]">
-          <p className="cut-kicker">{cut.name}</p>
-          <h1 className="cut-quote mt-1 text-[26px] leading-snug">{cut.productTitle}</h1>
+        <div className={`absolute inset-x-0 bottom-0 px-6 ${CUT_PAD}`}>
+          <p className="cut-kicker keep-all">{cut.name}</p>
+          <h1 className="cut-quote keep-all mt-1 text-[26px] leading-snug">{cut.productTitle}</h1>
         </div>
       </FrameMedia>
     );
@@ -240,19 +237,21 @@ function CutInner({
     return (
       <div className={`${EL_CLASS[el]} relative h-full min-h-[100dvh] w-full`}>
         <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-            <p className="cut-kicker tracking-[0.28em]">日柱</p>
+          <div
+            className={`absolute inset-0 flex flex-col items-center justify-center px-6 text-center ${CUT_PAD}`}
+          >
+            <p className="cut-kicker keep-all tracking-[0.28em]">日柱</p>
             <p
               className="mt-4 font-serif text-[84px] font-bold leading-none tracking-tight [text-shadow:0_4px_28px_rgba(0,0,0,0.85)]"
               style={{ color: "var(--el)" }}
             >
               {cut.hanja}
             </p>
-            <p className="cut-quote mt-3 text-[20px]">{cut.hanjaKo}</p>
-            <p className="mt-1 text-[13px] text-white/60 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+            <p className="cut-quote keep-all mt-3 text-[20px]">{cut.hanjaKo}</p>
+            <p className="keep-all mt-1 text-[13px] text-white/60 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
               {cut.sub}
             </p>
-            <p className="cut-quote mt-8 max-w-[300px] text-[18px] font-semibold leading-7">
+            <p className="cut-quote keep-all mt-8 max-w-[300px] text-[18px] font-semibold leading-7">
               {cut.text}
             </p>
           </div>
@@ -267,7 +266,7 @@ function CutInner({
     return (
       <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
         <div className="absolute inset-x-0 top-0 px-5 pt-14">
-          <p className="cut-kicker">오행</p>
+          <p className="cut-kicker keep-all">오행</p>
           <div className="mt-4 space-y-3">
             {(Object.entries(count) as [Element, number][]).map(([el, n]) => (
               <div key={el} className="flex items-center gap-3">
@@ -278,7 +277,7 @@ function CutInner({
                   <div
                     className="h-full rounded-full"
                     style={{
-                      width: `${Math.max(8, (n / max) * 100)}%`,
+                      width: n === 0 ? "0%" : `${Math.max(8, (n / max) * 100)}%`,
                       background: {
                         목: "#3d8b62",
                         화: "#c45c3e",
@@ -294,7 +293,7 @@ function CutInner({
             ))}
           </div>
         </div>
-        <div className="absolute inset-x-0 bottom-0 px-5 pb-[calc(40px+env(safe-area-inset-bottom))]">
+        <div className={`absolute inset-x-0 bottom-0 px-5 ${CUT_PAD}`}>
           <Bubble speaker={cut.speaker} text={cut.text} />
         </div>
       </FrameMedia>
@@ -304,8 +303,8 @@ function CutInner({
   if (cut.type === "myeongshik") {
     return (
       <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
-        <div className="absolute inset-x-0 top-0 px-4 pt-14">
-          <p className="cut-quote text-[20px]">{cut.text}</p>
+        <div className={`absolute inset-x-0 top-0 px-4 pt-14 ${CUT_PAD}`}>
+          <p className="cut-quote keep-all text-[20px]">{cut.text}</p>
           <div className="mt-5">
             <MyeongshikCard saju={reading.saju} />
           </div>
@@ -323,9 +322,7 @@ function CutInner({
   return (
     <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
       <div
-        className={`absolute inset-x-0 bottom-0 px-5 pb-[calc(40px+env(safe-area-inset-bottom))] ${
-          locked ? "locked-blur" : ""
-        }`}
+        className={`absolute inset-x-0 bottom-0 px-5 ${CUT_PAD} ${locked ? "locked-blur" : ""}`}
       >
         <Bubble speaker={cut.speaker} text={cut.text} />
       </div>
@@ -334,7 +331,7 @@ function CutInner({
           <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 text-xl text-[#f3ead8]">
             ⌀
           </span>
-          <p className="cut-quote mt-3 text-[20px]">더 보려면 복채가 필요하다</p>
+          <p className="cut-quote keep-all mt-3 text-[20px]">더 보려면 복채가 필요하다</p>
           <Link
             href={payHref}
             className="cta-dark mt-5 inline-flex h-11 items-center rounded-full px-5 text-[14px]"
@@ -351,9 +348,9 @@ function Bubble({ speaker, text }: { speaker?: string; text: string }) {
   return (
     <div className="rounded-2xl bg-[#f6f0e4]/95 px-4 py-3 text-ink shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
       {speaker ? (
-        <p className="text-[11px] font-medium text-sub">{speaker}</p>
+        <p className="keep-all text-[11px] font-medium text-sub">{speaker}</p>
       ) : null}
-      <p className="mt-1 whitespace-pre-line font-serif text-[16px] leading-7">{text}</p>
+      <p className="keep-all mt-1 whitespace-pre-line font-serif text-[16px] leading-7">{text}</p>
     </div>
   );
 }

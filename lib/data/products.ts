@@ -99,13 +99,11 @@ export const PRODUCTS: Product[] = [
     videoBg: KIM_BG,
     cta: "오늘 한 줄을 보라",
     introLines: [
-      "오늘은 길게 안 본다.",
-      "하루치만.",
+      "오늘은 길게 안 본다.\n하루치만.",
       "이름부터 대라.",
     ],
     introReplies: [
       "그래, 오늘 것만 보자.",
-      "하루치만 보자.",
       "좋아, 내 이름은..",
     ],
     landingCuts: [
@@ -139,13 +137,11 @@ export const PRODUCTS: Product[] = [
     videoBg: KIM_BG,
     cta: "내 재물운 바로 확인하기",
     introLines: [
-      "돈 얘기는 서두르면 달아난다.",
-      "앉어.",
+      "돈 얘기는 서두르면 달아난다.\n앉어.",
       "운명을 펴기 전에,\n이름부터 대라.",
     ],
     introReplies: [
       "그래, 돈 얘기부터.",
-      "앉는다.",
       "좋아, 내 이름은..",
     ],
     landingCuts: [

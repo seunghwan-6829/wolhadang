@@ -3,9 +3,9 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-/** landing / intro / input only — story/result stays a normal vertical webtoon scroll */
+/** landing / intro / input / story — lock-screen, one viewport, no scroll */
 const LOCKED =
-  /^\/$|^\/s\/[^/]+$|^\/s\/[^/]+\/intro$|^\/s\/[^/]+\/input$/;
+  /^\/$|^\/s\/[^/]+$|^\/s\/[^/]+\/intro$|^\/s\/[^/]+\/input$|^\/s\/[^/]+\/story\/?$/;
 
 export function ScreenLock() {
   const pathname = usePathname() || "/";

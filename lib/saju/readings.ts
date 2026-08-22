@@ -1,4 +1,5 @@
 import type { Product } from "../data/products";
+import { eulReul, iGa } from "./josa";
 import type {
   BirthInput,
   ComputedSaju,
@@ -265,16 +266,16 @@ function gunghapScore(a: ComputedSaju, b: ComputedSaju): { score: number; paragr
     relation = "같은 오행이라 말이 잘 통하고, 대신 약점도 겹칩니다.";
   } else if (gen[A] === B) {
     score = 88;
-    relation = `${a.input.name}의 ${A}이(가) ${b.input.name}의 ${B}을(를) 살립니다. 당신이 상대를 빛내는 궁합이다.`;
+    relation = `${a.input.name}의 ${iGa(A)} ${b.input.name}의 ${eulReul(B)} 살립니다. 당신이 상대를 빛내는 궁합이다.`;
   } else if (gen[B] === A) {
     score = 86;
-    relation = `${b.input.name}의 ${B}이(가) ${a.input.name}의 ${A}을(를) 살립니다. 상대에게서 힘이 들어오는 궁합이다.`;
+    relation = `${b.input.name}의 ${iGa(B)} ${a.input.name}의 ${eulReul(A)} 살립니다. 상대에게서 힘이 들어오는 궁합이다.`;
   } else if (ctl[A] === B) {
     score = 64;
-    relation = `${A}이(가) ${B}을(를) 극합니다. 당신이 리드하다 상대가 지칠 수 있다. 권한을 나누면 점수가 올라간다.`;
+    relation = `${iGa(A)} ${eulReul(B)} 극합니다. 당신이 리드하다 상대가 지칠 수 있다. 권한을 나누면 점수가 올라간다.`;
   } else if (ctl[B] === A) {
     score = 62;
-    relation = `${B}이(가) ${A}을(를) 극합니다. 상대의 속도에 눌릴 수 있으니, 나만의 시간을 계약처럼 정해 두라.`;
+    relation = `${iGa(B)} ${eulReul(A)} 극합니다. 상대의 속도에 눌릴 수 있으니, 나만의 시간을 계약처럼 정해 두라.`;
   } else {
     score = 70;
     relation = "직접 생극보다 옆자리에서 바라보는 관계. 친구로는 편하고, 연애로는 자극이 필요할 수 있다.";

@@ -5,3 +5,4 @@ export { detectShinsal } from "./shinsal";
 export * from "./types";
 export * from "./constants";
 export type { StoryCut } from "./story";
+export { iGa, eulReul } from "./josa";

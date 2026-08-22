@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FrameMedia } from "./FrameMedia";
 import { Header } from "./Header";
 import type { Product } from "@/lib/data/products";
+import { formatPrice } from "@/lib/data/products";
 
 export function LandingHero({
   product,
@@ -28,9 +29,12 @@ export function LandingHero({
           <h1 className="cut-quote keep-all mt-2 max-w-[20em] text-[24px] leading-snug sm:text-[26px]">
             {title}
           </h1>
+          <p className="keep-all mt-5 font-serif text-[18px] text-[#f3ead8] [text-shadow:0_2px_14px_rgba(0,0,0,0.75)]">
+            {product.price > 0 ? formatPrice(product.price) : "무료"}
+          </p>
           <Link
             href={ctaHref}
-            className="cta-dark mt-5 flex h-12 items-center justify-center rounded-full text-[15px]"
+            className="cta-dark mt-3 flex h-12 items-center justify-center rounded-full text-[15px]"
           >
             {ctaLabel}
           </Link>

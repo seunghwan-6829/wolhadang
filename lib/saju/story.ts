@@ -1,4 +1,5 @@
 import type { Product } from "../data/products";
+import { iGa } from "./josa";
 import type { ComputedSaju, Element, ElementCount, FullReading } from "./types";
 
 export type StoryCut = {
@@ -59,7 +60,7 @@ const KIM: Voice = {
   unfold: "사주부터 펼친다. 안 풀린 게 아니야.",
   traitLead: "먼저, 네가 어떤 사람인지.",
   more: "조금 더 본다.",
-  oheng: (m, f, b) => `${m}이 많고 ${f}이 비었다. ${b}`,
+  oheng: (m, f, b) => `${iGa(m)} 많고 ${iGa(f)} 비었다. ${b}`,
   teaserLead: "막힌 한 군데. 여기다.",
   lockLine: "더 보려면 복채가 필요하다.",
 };
@@ -237,7 +238,7 @@ export function buildStoryCuts(
       image: img,
       video: vid,
       speaker: product.character,
-      text: `${name}이 물은 것.\n\n「${asked}」\n\n그 질문은 사주 안에 답이 있다. 뼈대부터 보고, 그 자리를 짚는다.`,
+      text: `${iGa(name)} 물은 것.\n\n「${asked}」\n\n그 질문은 사주 안에 답이 있다. 뼈대부터 보고, 그 자리를 짚는다.`,
       tall: false,
     });
   }
@@ -311,7 +312,8 @@ export function buildStoryCuts(
     });
   }
 
-  if (product.slug !== "today") {
+  // unpaid: one paywall cut only. do not emit the four locked rows.
+  if (unlocked && product.slug !== "today") {
     for (const row of lockedIds) {
       const s = sec(reading, row.secId);
       const body =
@@ -322,11 +324,10 @@ export function buildStoryCuts(
         id: row.id,
         type: "dialogue",
         image: img,
-      video: vid,
+        video: vid,
         speaker: product.character,
-        text: unlocked ? body || row.fallback : `${v.lockLine}\n\n${body || row.fallback}`,
+        text: body || row.fallback,
         sub: s?.title,
-        lock: !unlocked,
         tall: true,
       });
     }
@@ -337,7 +338,7 @@ export function buildStoryCuts(
       id: "myeongshik",
       type: "myeongshik",
       image: img,
-        video: vid,
+      video: vid,
       speaker: product.character,
       text: "명식이다. 가사가 아니라 악보다.",
       tall: false,

@@ -18,9 +18,11 @@ body {
   background: #e8e0d0;
   color: #14110e;
   min-height: 100%;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
-/* landing / intro / input: freeze the viewport. story/result is NOT locked. */
+/* landing / intro / input / story: freeze the viewport. one cut, no swipe. */
 html.screen-lock,
 html.screen-lock body {
   height: 100dvh;
@@ -65,6 +67,8 @@ body {
   max-width: 430px;
   margin: 0 auto;
   min-height: 100dvh;
+  word-break: keep-all;
+  overflow-wrap: break-word;
   background: #f6f0e4;
   background-image:
     radial-gradient(ellipse at 18% 0%, rgba(196, 30, 58, 0.035), transparent 46%),
