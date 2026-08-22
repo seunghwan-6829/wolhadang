@@ -71,12 +71,20 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
 export function BackBar({
   href,
   light = false,
+  fixed = false,
 }: {
   href: string;
   light?: boolean;
+  fixed?: boolean;
 }) {
   return (
-    <div className="absolute left-0 right-0 top-0 z-20 flex h-12 items-center px-2">
+    <div
+      className={
+        fixed
+          ? "fixed left-1/2 top-0 z-20 flex h-12 w-full max-w-[430px] -translate-x-1/2 items-center px-2"
+          : "absolute left-0 right-0 top-0 z-20 flex h-12 items-center px-2"
+      }
+    >
       <Link
         href={href}
         aria-label="뒤로"

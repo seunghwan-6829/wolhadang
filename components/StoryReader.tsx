@@ -266,31 +266,33 @@ function CutInner({
     return (
       <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
         <div className="absolute inset-x-0 top-0 px-5 pt-14">
-          <p className="cut-kicker keep-all">오행</p>
-          <div className="mt-4 space-y-3">
-            {(Object.entries(count) as [Element, number][]).map(([el, n]) => (
-              <div key={el} className="flex items-center gap-3">
-                <span className="w-6 text-[13px] text-[#f3ead8] [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-                  {el}
-                </span>
-                <div className="h-3 flex-1 overflow-hidden rounded-full bg-white/15">
-                  <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: n === 0 ? "0%" : `${Math.max(8, (n / max) * 100)}%`,
-                      background: {
-                        목: "#3d8b62",
-                        화: "#c45c3e",
-                        토: "#b07a45",
-                        금: "#d4af37",
-                        수: "#3d7ea6",
-                      }[el],
-                    }}
-                  />
+          <div className="rounded-2xl bg-black/70 backdrop-blur-md px-4 py-4 ring-1 ring-white/10">
+            <p className="cut-kicker keep-all">오행</p>
+            <div className="mt-4 space-y-3">
+              {(Object.entries(count) as [Element, number][]).map(([el, n]) => (
+                <div key={el} className="flex items-center gap-3">
+                  <span className="w-6 text-[13px] text-[#f3ead8] [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+                    {el}
+                  </span>
+                  <div className="h-3 flex-1 overflow-hidden rounded-full bg-white/15">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: n === 0 ? "0%" : `${Math.max(8, (n / max) * 100)}%`,
+                        background: {
+                          목: "#3d8b62",
+                          화: "#c45c3e",
+                          토: "#b07a45",
+                          금: "#d4af37",
+                          수: "#3d7ea6",
+                        }[el],
+                      }}
+                    />
+                  </div>
+                  <span className="w-4 text-right text-[12px] text-white/60">{n}</span>
                 </div>
-                <span className="w-4 text-right text-[12px] text-white/60">{n}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
         <div className={`absolute inset-x-0 bottom-0 px-5 ${CUT_PAD}`}>

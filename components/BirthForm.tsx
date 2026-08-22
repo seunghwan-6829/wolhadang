@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { Product } from "@/lib/data/products";
 import { YEAR_MAX, YEAR_MIN } from "@/lib/saju/constants";
 import type { BirthInput, CalendarType, Gender } from "@/lib/saju/types";
 import { BIRTH_STORAGE_KEY, birthToQuery } from "@/lib/birth-query";
+import { BackBar } from "./Header";
 
 type PersonDraft = {
   name: string;
@@ -19,6 +20,10 @@ type PersonDraft = {
   time: string;
 };
 
+const INPUT_DRAFT_KEY = "wolhadang_input_draft";
+
+type InputDraft = PersonDraft & { question: string };
+
 const emptyPerson = (): PersonDraft => ({
   name: "",
   gender: "",
@@ -30,6 +35,38 @@ const emptyPerson = (): PersonDraft => ({
   hourUnknown: false,
   time: "",
 });
+
+function readInputDraft(): InputDraft | null {
+  try {
+    const raw = sessionStorage.getItem(INPUT_DRAFT_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw) as Partial<InputDraft>;
+    return {
+      ...emptyPerson(),
+      name: typeof d.name === "string" ? d.name : "",
+      gender: d.gender === "male" || d.gender === "female" ? d.gender : "",
+      calendar: d.calendar === "lunar" ? "lunar" : "solar",
+      isLeapMonth: Boolean(d.isLeapMonth),
+      year: Number(d.year) || 0,
+      month: Number(d.month) || 0,
+      day: Number(d.day) || 0,
+      hourUnknown: Boolean(d.hourUnknown),
+      time: typeof d.time === "string" ? d.time : "",
+      question: typeof d.question === "string" ? d.question : "",
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeInputDraft(me: PersonDraft, question: string) {
+  try {
+    const draft: InputDraft = { ...me, question };
+    sessionStorage.setItem(INPUT_DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    /* ignore */
+  }
+}
 
 function daysInMonth(year: number, month: number, lunar: boolean): number {
   if (year < YEAR_MIN || month < 1) return 31;
@@ -231,10 +268,27 @@ export function BirthForm({
   tone?: "dark" | "paper";
 }) {
   const router = useRouter();
+  const sp = useSearchParams();
+  const phase = sp.get("step") === "ask" ? "ask" : "birth";
   const [me, setMe] = useState<PersonDraft>(emptyPerson);
-  const [phase, setPhase] = useState<"birth" | "ask">("birth");
   const [question, setQuestion] = useState("");
+  const [ready, setReady] = useState(false);
   const ok = validPerson(me);
+
+  useEffect(() => {
+    const draft = readInputDraft();
+    if (draft) {
+      const { question: q, ...person } = draft;
+      setMe(person);
+      setQuestion(q);
+    }
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    writeInputDraft(me, question);
+  }, [ready, me, question]);
 
   function toInput(p: PersonDraft): Omit<BirthInput, "loveStatus" | "partner"> {
     const [hh, mm] = (p.time || "0:0").split(":").map(Number);
@@ -269,7 +323,8 @@ export function BirthForm({
     e.preventDefault();
     if (phase === "birth") {
       if (!ok) return;
-      setPhase("ask");
+      writeInputDraft(me, question);
+      router.push(`/s/${product.slug}/input?step=ask`);
       return;
     }
     goStory(question);
@@ -280,67 +335,72 @@ export function BirthForm({
       ? "bg-gradient-to-t from-black via-black/85 to-transparent"
       : "";
   const dark = tone === "dark";
+  const backHref =
+    phase === "ask" ? `/s/${product.slug}/input` : `/s/${product.slug}/intro`;
 
   return (
-    <form onSubmit={onSubmit} className={dark ? "space-y-4 pb-2" : "space-y-8 pb-28"}>
-      {phase === "birth" ? (
-        <PersonFields
-          value={me}
-          onChange={setMe}
-          title="네 사주"
-          namePlaceholder="이름부터 대라"
-          tone={tone}
-        />
-      ) : (
-        <div>
-          <p className={dark ? "font-serif text-[17px] text-[#f3ead8]" : "font-serif text-[17px] text-ink"}>
-            특별히 물어볼 것
-          </p>
-          <p className={dark ? "mt-1 text-[13px] text-white/55" : "mt-1 text-[13px] text-sub"}>
-            없어도 된다. 건너뛰어도 사주는 펼친다.
-          </p>
-          <textarea
-            value={question}
-            maxLength={200}
-            rows={dark ? 4 : 5}
-            placeholder="올해 이직해도 되나, 이런 것."
-            onChange={(e) => setQuestion(e.target.value.slice(0, 200))}
-            className={
-              dark
-                ? "mt-4 w-full resize-none rounded-xl bg-white/8 px-3 py-3 text-[15px] text-[#f3ead8] outline-none ring-1 ring-white/20 placeholder:text-white/30"
-                : "mt-4 w-full resize-none rounded-xl bg-white px-3 py-3 text-[15px] text-ink outline-none ring-1 ring-black/10"
-            }
+    <>
+      <BackBar href={backHref} light={dark} fixed />
+      <form onSubmit={onSubmit} className={dark ? "space-y-4 pb-2" : "space-y-8 pb-28"}>
+        {phase === "birth" ? (
+          <PersonFields
+            value={me}
+            onChange={setMe}
+            title="네 사주"
+            namePlaceholder="이름부터 대라"
+            tone={tone}
           />
-          <p className={dark ? "mt-2 text-right text-[12px] text-white/45" : "mt-2 text-right text-[12px] text-sub"}>
-            {question.length}/200
-          </p>
-        </div>
-      )}
+        ) : (
+          <div>
+            <p className={dark ? "font-serif text-[17px] text-[#f3ead8]" : "font-serif text-[17px] text-ink"}>
+              특별히 물어볼 것
+            </p>
+            <p className={dark ? "mt-1 text-[13px] text-white/55" : "mt-1 text-[13px] text-sub"}>
+              없어도 된다. 건너뛰어도 사주는 펼친다.
+            </p>
+            <textarea
+              value={question}
+              maxLength={200}
+              rows={dark ? 4 : 5}
+              placeholder="올해 이직해도 되나, 이런 것."
+              onChange={(e) => setQuestion(e.target.value.slice(0, 200))}
+              className={
+                dark
+                  ? "mt-4 w-full resize-none rounded-xl bg-white/8 px-3 py-3 text-[15px] text-[#f3ead8] outline-none ring-1 ring-white/20 placeholder:text-white/30"
+                  : "mt-4 w-full resize-none rounded-xl bg-white px-3 py-3 text-[15px] text-ink outline-none ring-1 ring-black/10"
+              }
+            />
+            <p className={dark ? "mt-2 text-right text-[12px] text-white/45" : "mt-2 text-right text-[12px] text-sub"}>
+              {question.length}/200
+            </p>
+          </div>
+        )}
 
-      <div
-        className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 ${bar}`}
-      >
-        {phase === "ask" ? (
+        <div
+          className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 ${bar}`}
+        >
+          {phase === "ask" ? (
+            <button
+              type="button"
+              onClick={() => goStory("")}
+              className={`mb-2 h-11 w-full text-[14px] ${
+                dark ? "text-white/60" : "text-sub"
+              }`}
+            >
+              건너뛰기
+            </button>
+          ) : null}
           <button
-            type="button"
-            onClick={() => goStory("")}
-            className={`mb-2 h-11 w-full text-[14px] ${
-              dark ? "text-white/60" : "text-sub"
+            type="submit"
+            disabled={phase === "birth" && !ok}
+            className={`h-12 w-full rounded-full text-[15px] ${
+              tone === "dark" ? "pill-cream" : "cta-dark"
             }`}
           >
-            건너뛰기
+            다음으로
           </button>
-        ) : null}
-        <button
-          type="submit"
-          disabled={phase === "birth" && !ok}
-          className={`h-12 w-full rounded-full text-[15px] ${
-            tone === "dark" ? "pill-cream" : "cta-dark"
-          }`}
-        >
-          다음으로
-        </button>
-      </div>
-    </form>
+        </div>
+      </form>
+    </>
   );
 }
