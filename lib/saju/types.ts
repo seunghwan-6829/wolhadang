@@ -15,6 +15,8 @@ export type BirthInput = {
   hour: number;
   minute: number;
   loveStatus?: LoveStatus;
+  /** optional free-text question from the form (max 200) */
+  question?: string;
   partner?: Omit<BirthInput, "loveStatus" | "partner">;
 };
 

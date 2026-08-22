@@ -21,6 +21,7 @@ export function birthToQuery(input: BirthInput): string {
     p.set("mi", String(input.minute));
   }
   if (input.loveStatus) p.set("ls", input.loveStatus);
+  if (input.question) p.set("ask", input.question.slice(0, 200));
   if (input.partner) {
     const q = input.partner;
     p.set("pn", q.name);
@@ -74,6 +75,7 @@ export function queryToBirth(
     hour: hourUnknown ? 12 : n(get("h"), 12),
     minute: hourUnknown ? 0 : n(get("mi"), 0),
     loveStatus,
+    question: (get("ask") ?? "").trim().slice(0, 200) || undefined,
   };
 
   const pn = (get("pn") ?? "").trim();

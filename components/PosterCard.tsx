@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/lib/data/products";
-import { formatPrice } from "@/lib/data/products";
+import { flatLine, formatPrice } from "@/lib/data/products";
 import { FrameMedia } from "./FrameMedia";
 
 export function PosterCard({
@@ -28,7 +28,7 @@ export function PosterCard({
       <p className="mt-2 line-clamp-1 text-[13px] font-medium text-ink">
         {product.name}
       </p>
-      <p className="mt-0.5 line-clamp-1 text-[12px] text-sub">{product.hook}</p>
+      <p className="mt-0.5 line-clamp-1 text-[12px] text-sub">{flatLine(product.hook)}</p>
       <p className="mt-0.5 text-[12px] text-sub">{formatPrice(product.price)}</p>
     </Link>
   );

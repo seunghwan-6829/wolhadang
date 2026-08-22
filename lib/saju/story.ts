@@ -61,7 +61,7 @@ const KIM: Voice = {
   more: "조금 더 본다.",
   oheng: (m, f, b) => `${m}이 많고 ${f}이 비었다. ${b}`,
   teaserLead: "막힌 한 군데. 여기다.",
-  lockLine: "뒷장은 값을 치러야 연다.",
+  lockLine: "더 보려면 복채가 필요하다.",
 };
 
 function voiceOf(_character: string): Voice {
@@ -229,6 +229,19 @@ export function buildStoryCuts(
     tall: true,
   });
 
+  const asked = saju.input.question?.trim();
+  if (asked) {
+    cuts.push({
+      id: "asked",
+      type: "dialogue",
+      image: img,
+      video: vid,
+      speaker: product.character,
+      text: `${name}이 물은 것.\n\n「${asked}」\n\n그 질문은 사주 안에 답이 있다. 뼈대부터 보고, 그 자리를 짚는다.`,
+      tall: false,
+    });
+  }
+
   // product-specific teasers (unlocked)
   if (product.slug === "today" && reading.today) {
     cuts.push({
@@ -262,19 +275,19 @@ export function buildStoryCuts(
       text:
         product.slug === "jaemul"
           ? `${v.teaserLead}\n\n돈은 성격이 있다. 네 사주가 부르는 돈의 결부터.`
-          : `${v.teaserLead}\n\n인연은 구하면 달아나고, 빛나면 앉는다.`,
+          : `${v.teaserLead}\n\n오행이 기운 자리, 그게 네 목이다.`,
       tall: false,
     });
     cuts.push({
       id: "t2",
       type: "dialogue",
       image: img,
-        video: vid,
+      video: vid,
       speaker: product.character,
       text:
         product.slug === "jaemul"
           ? "버는 달과 잠그는 달을 달력에 표시해 둬. 그게 첫 장이다."
-          : "조급히 자리를 채우지 마라. 숨이 편한 사람만 남겨.",
+          : "그 자리를 풀면 나머지 줄기가 움직인다. 에두르지 않는다.",
       tall: false,
     });
   }
@@ -285,6 +298,18 @@ export function buildStoryCuts(
     { id: "year", secId: "year", fallback: "올해 세운." },
     { id: "decade", secId: "decade", fallback: "앞으로 십 년의 고개." },
   ];
+
+  if (!unlocked && product.price > 0) {
+    cuts.push({
+      id: "paywall",
+      type: "dialogue",
+      image: img,
+      video: vid,
+      speaker: product.character,
+      text: "여기까지가 앞장이다.\n\n더 보려면 복채가 필요하다.",
+      tall: true,
+    });
+  }
 
   if (product.slug !== "today") {
     for (const row of lockedIds) {

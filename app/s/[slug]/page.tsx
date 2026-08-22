@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-import { LandingWebtoon } from "@/components/LandingWebtoon";
-import { getProduct } from "@/lib/data/products";
-import { reviewsForProduct } from "@/lib/data/reviews";
+import { LandingHero } from "@/components/LandingHero";
+import { flatLine, getProduct } from "@/lib/data/products";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -10,14 +9,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
   if (!product) return { title: "묵헌" };
-  return { title: product.name, description: product.hook };
+  return { title: product.name, description: flatLine(product.hook) };
 }
 
 export default async function ProductLandingPage({ params }: Props) {
   const { slug } = await params;
   const product = getProduct(slug);
   if (!product) notFound();
-  const reviews = reviewsForProduct(slug);
 
-  return <LandingWebtoon product={product} reviews={reviews} />;
+  return (
+    <LandingHero
+      product={product}
+      title={product.hook}
+      ctaHref={`/s/${product.slug}/intro`}
+      ctaLabel={product.cta}
+    />
+  );
 }

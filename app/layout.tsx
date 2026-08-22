@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
+import { ScreenLock } from "@/components/ScreenLock";
 import "./globals.css";
 
 const sans = Noto_Sans_KR({
@@ -21,11 +22,11 @@ export const metadata: Metadata = {
     default: "묵헌 — 막힌 한 군데",
     template: "%s | 묵헌",
   },
-  description: "인생이 안 풀린 게 아니라, 한 군데가 막혀 있던 겁니다.",
+  description: "인생이 안 풀린 게 아니야. 한 군데가 막혀 있어.",
   applicationName: "묵헌",
   openGraph: {
     title: "묵헌 — 막힌 한 군데",
-    description: "인생이 안 풀린 게 아니라, 한 군데가 막혀 있던 겁니다.",
+    description: "인생이 안 풀린 게 아니야. 한 군데가 막혀 있어.",
     siteName: "묵헌",
     locale: "ko_KR",
     type: "website",
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${sans.variable} ${serif.variable} h-full antialiased`}
     >
       <body className="min-h-full text-[15px] leading-relaxed text-ink">
+        <ScreenLock />
         <div className="phone-shell flex min-h-dvh flex-col">{children}</div>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { formatPrice, type Product } from "@/lib/data/products";
+import { flatLine, formatPrice, type Product } from "@/lib/data/products";
 import { PAID_STORAGE_PREFIX } from "@/lib/birth-query";
 import { BackBar } from "@/components/Header";
 import { useState } from "react";
@@ -30,9 +30,9 @@ export function PayClient({ product }: { product: Product }) {
       <BackBar href={`/s/${product.slug}/story?${qs}`} />
       <main className="px-5 pb-16 pt-14">
         <p className="text-[11px] tracking-widest text-sub">MOCK CHECKOUT</p>
-        <h1 className="mt-1 font-serif text-2xl text-ink">값을 치른다 (데모)</h1>
+        <h1 className="mt-1 font-serif text-2xl text-ink">복채를 낸다 (데모)</h1>
         <p className="mt-2 text-[13px] text-sub">
-          실제 결제는 없다. 버튼을 누르면 뒷장이 열린다.
+          실제 결제는 없다. 버튼을 누르면 잠긴 장이 열린다.
         </p>
 
         <div className="mt-6 flex gap-3 rounded-2xl border border-line bg-paper p-3">
@@ -43,7 +43,7 @@ export function PayClient({ product }: { product: Product }) {
           </span>
           <div className="min-w-0">
             <p className="font-serif text-[16px] text-ink">{product.name}</p>
-            <p className="mt-1 text-[13px] text-sub">{product.hook}</p>
+            <p className="mt-1 text-[13px] text-sub">{flatLine(product.hook)}</p>
             <p className="mt-2 text-[15px] font-bold">{formatPrice(product.price)}</p>
           </div>
         </div>

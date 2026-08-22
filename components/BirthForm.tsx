@@ -66,7 +66,7 @@ function PersonFields({
   const check = dark ? "mt-2 flex items-center gap-2 text-[13px] text-white/60" : "mt-2 flex items-center gap-2 text-[13px] text-sub";
 
   return (
-    <fieldset className="space-y-5">
+    <fieldset className={dark ? "space-y-3.5" : "space-y-5"}>
       <legend className={legend}>{title}</legend>
 
       <div>
@@ -180,8 +180,8 @@ function PersonFields({
         <p className={`${label} mb-2`}>성별</p>
         <div className="grid grid-cols-2 gap-2">
           {([
-            ["male", "남성"],
-            ["female", "여성"],
+            ["male", "남자"],
+            ["female", "여자"],
           ] as const).map(([g, lab]) => (
             <button
               key={g}
@@ -219,6 +219,8 @@ export function BirthForm({
 }) {
   const router = useRouter();
   const [me, setMe] = useState<PersonDraft>(emptyPerson);
+  const [phase, setPhase] = useState<"birth" | "ask">("birth");
+  const [question, setQuestion] = useState("");
   const ok = validPerson(me);
 
   function toInput(p: PersonDraft): Omit<BirthInput, "loveStatus" | "partner"> {
@@ -237,11 +239,10 @@ export function BirthForm({
     };
   }
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!ok) return;
+  function goStory(ask: string) {
     const input: BirthInput = {
       ...toInput(me),
+      question: ask.trim().slice(0, 200) || undefined,
     };
     try {
       sessionStorage.setItem(BIRTH_STORAGE_KEY, JSON.stringify(input));
@@ -251,32 +252,80 @@ export function BirthForm({
     router.push(`/s/${product.slug}/story?${birthToQuery(input)}`);
   }
 
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (phase === "birth") {
+      if (!ok) return;
+      setPhase("ask");
+      return;
+    }
+    goStory(question);
+  }
+
   const bar =
     tone === "dark"
       ? "bg-gradient-to-t from-black via-black/85 to-transparent"
       : "";
+  const dark = tone === "dark";
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8 pb-28">
-      <PersonFields
-        value={me}
-        onChange={setMe}
-        title="네 사주"
-        namePlaceholder="이름부터 대라"
-        tone={tone}
-      />
+    <form onSubmit={onSubmit} className={dark ? "space-y-4 pb-2" : "space-y-8 pb-28"}>
+      {phase === "birth" ? (
+        <PersonFields
+          value={me}
+          onChange={setMe}
+          title="네 사주"
+          namePlaceholder="이름부터 대라"
+          tone={tone}
+        />
+      ) : (
+        <div>
+          <p className={dark ? "font-serif text-[17px] text-[#f3ead8]" : "font-serif text-[17px] text-ink"}>
+            특별히 물어볼 것
+          </p>
+          <p className={dark ? "mt-1 text-[13px] text-white/55" : "mt-1 text-[13px] text-sub"}>
+            없어도 된다. 건너뛰어도 사주는 펼친다.
+          </p>
+          <textarea
+            value={question}
+            maxLength={200}
+            rows={dark ? 4 : 5}
+            placeholder="올해 이직해도 되나, 이런 것."
+            onChange={(e) => setQuestion(e.target.value.slice(0, 200))}
+            className={
+              dark
+                ? "mt-4 w-full resize-none rounded-xl bg-white/8 px-3 py-3 text-[15px] text-[#f3ead8] outline-none ring-1 ring-white/20 placeholder:text-white/30"
+                : "mt-4 w-full resize-none rounded-xl bg-white px-3 py-3 text-[15px] text-ink outline-none ring-1 ring-black/10"
+            }
+          />
+          <p className={dark ? "mt-2 text-right text-[12px] text-white/45" : "mt-2 text-right text-[12px] text-sub"}>
+            {question.length}/200
+          </p>
+        </div>
+      )}
 
       <div
         className={`fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 ${bar}`}
       >
+        {phase === "ask" ? (
+          <button
+            type="button"
+            onClick={() => goStory("")}
+            className={`mb-2 h-11 w-full text-[14px] ${
+              dark ? "text-white/60" : "text-sub"
+            }`}
+          >
+            건너뛰기
+          </button>
+        ) : null}
         <button
           type="submit"
-          disabled={!ok}
+          disabled={phase === "birth" && !ok}
           className={`h-12 w-full rounded-full text-[15px] ${
             tone === "dark" ? "pill-cream" : "cta-dark"
           }`}
         >
-          때를 맡긴다
+          다음으로
         </button>
       </div>
     </form>

@@ -50,6 +50,7 @@ export function StoryReader({
     skipAnim && initialReading ? "show" : "load",
   );
   const [reading, setReading] = useState<FullReading | null>(initialReading);
+  const [seenFree, setSeenFree] = useState(false);
   const qs = sp.toString();
 
   const paid = useMemo(() => {
@@ -127,92 +128,77 @@ export function StoryReader({
   const focus = sp.get("cut");
   const viewCuts = focus ? cuts.filter((c) => c.id === focus) : cuts;
   const payHref = `/s/${product.slug}/pay?${qs}`;
-  const showPay = !paid && product.price > 0;
+  const showPay = !paid && product.price > 0 && !focus;
+  const lastFreeId =
+    [...viewCuts].reverse().find((c) => !c.lock)?.id ?? viewCuts[viewCuts.length - 1]?.id;
 
   return (
-    <div className="relative h-dvh overflow-hidden bg-[#161412]">
-      <div id="story-snap" className="snap-y-mandatory">
-        <StoryCuts
-          cuts={viewCuts}
-          product={product}
-          reading={reading}
-          payHref={payHref}
-        />
+    <StoryScroll
+      viewCuts={viewCuts}
+      product={product}
+      reading={reading}
+      payHref={payHref}
+      showPay={showPay}
+      lastFreeId={lastFreeId}
+      seenFree={seenFree}
+      setSeenFree={setSeenFree}
+    />
+  );
+}
+
+function StoryScroll({
+  viewCuts,
+  product,
+  reading,
+  payHref,
+  showPay,
+  lastFreeId,
+  seenFree,
+  setSeenFree,
+}: {
+  viewCuts: StoryCut[];
+  product: Product;
+  reading: FullReading;
+  payHref: string;
+  showPay: boolean;
+  lastFreeId?: string;
+  seenFree: boolean;
+  setSeenFree: (v: boolean) => void;
+}) {
+  useEffect(() => {
+    if (!showPay || seenFree || !lastFreeId) return;
+    const el = document.getElementById(`cut-${lastFreeId}`);
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setSeenFree(true);
+      },
+      { threshold: 0.35 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [showPay, seenFree, lastFreeId, setSeenFree]);
+
+  return (
+    <div className="relative bg-[#161412]">
+      <div className={"webtoon-scroll" + (showPay && seenFree ? " pb-24" : "")}>
+        {viewCuts.map((cut) => (
+          <section key={cut.id} id={`cut-${cut.id}`} className="webtoon-cut">
+            <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
+          </section>
+        ))}
       </div>
-      {focus ? null : <NextCut cuts={viewCuts} raised={showPay} />}
-      {showPay && !focus ? (
+      {showPay && seenFree ? (
         <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-black via-black/85 to-transparent px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-8">
           <Link
             href={payHref}
             className="cta-dark flex h-12 items-center justify-center rounded-full text-[15px] [text-shadow:none]"
           >
-            뒷장을 연다 {formatPrice(product.price)}
+            복채를 낸다 {formatPrice(product.price)}
           </Link>
         </div>
       ) : null}
     </div>
-  );
-}
-
-function NextCut({ cuts, raised }: { cuts: StoryCut[]; raised: boolean }) {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    const root = document.getElementById("story-snap");
-    const els = cuts.map((c) => document.getElementById(`cut-${c.id}`));
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const vis = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!vis) return;
-        const idx = cuts.findIndex((c) => `cut-${c.id}` === vis.target.id);
-        if (idx >= 0) setI(idx);
-      },
-      { root, threshold: 0.45 },
-    );
-    els.forEach((el) => el && obs.observe(el));
-    return () => obs.disconnect();
-  }, [cuts]);
-
-  if (i >= cuts.length - 1) return null;
-  if (cuts[i]?.lock) return null;
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        const next = cuts[i + 1];
-        document
-          .getElementById(`cut-${next.id}`)
-          ?.scrollIntoView({ behavior: "smooth" });
-      }}
-      className={`fixed left-1/2 z-30 -translate-x-1/2 rounded-full bg-[#f3ead8]/92 px-4 py-2 text-[13px] font-semibold text-ink shadow-lg ${
-        raised ? "bottom-[88px]" : "bottom-8"
-      }`}
-    >
-      다음 컷
-    </button>
-  );
-}
-
-function StoryCuts({
-  cuts,
-  product,
-  reading,
-  payHref,
-}: {
-  cuts: StoryCut[];
-  product: Product;
-  reading: FullReading;
-  payHref: string;
-}) {
-  return (
-    <>
-      {cuts.map((cut) => (
-        <section key={cut.id} id={`cut-${cut.id}`} className="snap-cut">
-          <CutInner cut={cut} product={product} reading={reading} payHref={payHref} />
-        </section>
-      ))}
-    </>
   );
 }
 
@@ -241,7 +227,7 @@ function CutInner({
     return (
       <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
         <BackBar href={`/s/${product.slug}/input`} light />
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-[calc(108px+env(safe-area-inset-bottom))]">
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-[calc(40px+env(safe-area-inset-bottom))]">
           <p className="cut-kicker">{cut.name}</p>
           <h1 className="cut-quote mt-1 text-[26px] leading-snug">{cut.productTitle}</h1>
         </div>
@@ -252,7 +238,7 @@ function CutInner({
   if (cut.type === "splash") {
     const el = cut.element ?? "금";
     return (
-      <div className={`${EL_CLASS[el]} relative h-full w-full`}>
+      <div className={`${EL_CLASS[el]} relative h-full min-h-[100dvh] w-full`}>
         <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
             <p className="cut-kicker tracking-[0.28em]">日柱</p>
@@ -308,7 +294,7 @@ function CutInner({
             ))}
           </div>
         </div>
-        <div className="absolute inset-x-0 bottom-0 px-5 pb-[calc(108px+env(safe-area-inset-bottom))]">
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-[calc(40px+env(safe-area-inset-bottom))]">
           <Bubble speaker={cut.speaker} text={cut.text} />
         </div>
       </FrameMedia>
@@ -337,7 +323,7 @@ function CutInner({
   return (
     <FrameMedia src={src} videoSrc={videoSrc} alt={product.character} fill>
       <div
-        className={`absolute inset-x-0 bottom-0 px-5 pb-[calc(108px+env(safe-area-inset-bottom))] ${
+        className={`absolute inset-x-0 bottom-0 px-5 pb-[calc(40px+env(safe-area-inset-bottom))] ${
           locked ? "locked-blur" : ""
         }`}
       >
@@ -345,13 +331,15 @@ function CutInner({
       </div>
       {locked ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 px-6 text-center">
-          <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 text-xl text-[#f3ead8]">⌀</span>
-          <p className="cut-quote mt-3 text-[20px]">여기서부터는 잠겼다</p>
+          <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 text-xl text-[#f3ead8]">
+            ⌀
+          </span>
+          <p className="cut-quote mt-3 text-[20px]">더 보려면 복채가 필요하다</p>
           <Link
             href={payHref}
             className="cta-dark mt-5 inline-flex h-11 items-center rounded-full px-5 text-[14px]"
           >
-            뒷장을 연다 {formatPrice(product.price)}
+            복채를 낸다 {formatPrice(product.price)}
           </Link>
         </div>
       ) : null}

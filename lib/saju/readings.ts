@@ -308,19 +308,19 @@ function todayText(saju: ComputedSaju, now: Date): { title: string; paragraphs: 
   const doList: Record<string, string> = {
     비견: "혼자 결정하기보다 동료와 나눠 하라.",
     겁재: "큰돈·큰 약속은 내일로. 오늘은 지키는 날.",
-    식신: "만들고 말하고 드라. 창작과 식사가 길합니다.",
+    식신: "만들고 말하고 드라. 창작과 식사가 길하다.",
     상관: "직언은 메모로. 공개 발언은 한 박자 늦추라.",
     편재: "제안은 받되 도장은 보류. 숫자만 확인하라.",
-    정재: "밀린 정산, 세금, 청소. 작은 질서가 돈을 부릅니다.",
-    편관: "마감이 있다면 정면으로. 피하면 밤에 더 커집니다.",
-    정관: "공식 자리, 서류, 어른과의 약속이 길합니다.",
+    정재: "밀린 정산, 세금, 청소. 작은 질서가 돈을 부른다.",
+    편관: "마감이 있다면 정면으로. 피하면 밤에 더 커진다.",
+    정관: "공식 자리, 서류, 어른과의 약속이 길하다.",
     편인: "직감을 믿되 제3자에게 한 번 검증하라.",
     정인: "공부·상담·휴식이 생산이다. 무리한 실적은 내일.",
   };
   return {
     title: `오늘의 일진 ${t.dayHanja.replace("日柱", "")} · ${god}`,
     paragraphs: [
-      `오늘 일주는 ${t.day.heavenlyStem}${t.day.earthlyBranch}이며, 당신의 일간 ${saju.dayMaster}와의 관계는 ${god}이다.`,
+      `오늘 일주는 ${t.day.heavenlyStem}${t.day.earthlyBranch}이며, 네 일간 ${saju.dayMaster}와의 관계는 ${god}이다.`,
       doList[god] ?? "흐름을 거스르지 말고, 한 가지만 잘 마무리해라.",
       "이 한 줄은 맛보기다. 인생 전체의 결은 정통사주에서 이어진다.",
     ],
@@ -386,19 +386,19 @@ export function buildReading(
     id: "wealth",
     title: "재물운",
     locked: !paid,
-    paragraphs: paid ? wealth : ["뒷장은 값을 치러야 연다. 재성의 강약, 올해 돈의 흐름."],
+    paragraphs: paid ? wealth : ["더 보려면 복채가 필요하다. 재성의 강약, 올해 돈의 흐름."],
   };
   const lockedLove: ReadingSection = {
     id: "love",
     title: "연애 · 인연",
     locked: !paid,
-    paragraphs: paid ? love : ["뒷장은 값을 치러야 연다. 도화와 인연의 자리."],
+    paragraphs: paid ? love : ["더 보려면 복채가 필요하다. 도화와 인연의 자리."],
   };
   const lockedCareer: ReadingSection = {
     id: "career",
     title: "직업 · 진로",
     locked: !paid,
-    paragraphs: paid ? career : ["뒷장은 값을 치러야 연다. 일이 풀리는 자리."],
+    paragraphs: paid ? career : ["더 보려면 복채가 필요하다. 일이 풀리는 자리."],
   };
   const lockedDecade: ReadingSection = {
     id: "decade",
@@ -406,7 +406,7 @@ export function buildReading(
     locked: !paid,
     paragraphs: paid
       ? decadeText(saju)
-      : ["뒷장은 값을 치러야 연다. 대운의 고개."],
+      : ["더 보려면 복채가 필요하다. 대운의 고개."],
   };
 
   let sections: ReadingSection[] = [unlockedTrait, unlockedYear, lockedWealth, lockedLove, lockedCareer, lockedDecade];

@@ -20,12 +20,17 @@ export type Product = {
   videoBg?: string;
   cta: string;
   introLines: string[];
+  introReplies: string[];
 };
 
 export const CHARACTER = "터줏 김선생";
 
 export const HERO_LINE =
-  "인생이 안 풀린 게 아니라, 한 군데가 막혀 있던 겁니다.";
+  "인생이 안 풀린 게 아니야.\n한 군데가 막혀 있어.";
+
+export function flatLine(s: string): string {
+  return s.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
+}
 
 const KIM_POSTER = "/characters/kim-hero.png";
 const KIM_FUNNEL = "/characters/kim-funnel.png";
@@ -39,7 +44,7 @@ export const PRODUCTS: Product[] = [
     character: CHARACTER,
     shortName: "정통사주",
     name: "터줏 김선생 정통사주",
-    hook: "네 사주, 안 풀린 게 아니야. 한 군데가 막혀 있어.",
+    hook: "네 사주, 안 풀린 게 아니야.\n한 군데가 막혀 있어.",
     description:
       "일간부터 재물·직업·인연·세운까지. 막힌 한 군데를 짚는다. 에두르지 않는다.",
     price: 29900,
@@ -50,10 +55,16 @@ export const PRODUCTS: Product[] = [
     story: KIM_STORY,
     video: KIM_VIDEO,
     videoBg: KIM_BG,
-    cta: "막힌 곳을 보라",
+    cta: "내 사주팔자 바로 확인하기",
     introLines: [
-      "네 사주, 안 풀린 게 아니야. 한 군데가 막혀 있어.",
-      "이름부터 대라.",
+      "네 사주,\n안 풀린 게 아니야.",
+      "한 군데가 막혀 있어.",
+      "운명을 펴기 전에,\n이름부터 대라.",
+    ],
+    introReplies: [
+      "그래서?",
+      "그래서, 어디가 막혔는데.",
+      "좋아, 내 이름은..",
     ],
     landingCuts: [
       "왔구나.",
@@ -88,8 +99,14 @@ export const PRODUCTS: Product[] = [
     videoBg: KIM_BG,
     cta: "오늘 한 줄을 보라",
     introLines: [
-      "오늘은 길게 안 본다. 하루치만.",
+      "오늘은 길게 안 본다.",
+      "하루치만.",
       "이름부터 대라.",
+    ],
+    introReplies: [
+      "그래, 오늘 것만 보자.",
+      "하루치만 보자.",
+      "좋아, 내 이름은..",
     ],
     landingCuts: [
       "왔구나.",
@@ -109,7 +126,7 @@ export const PRODUCTS: Product[] = [
     character: CHARACTER,
     shortName: "재물",
     name: "터줏 김선생 재물",
-    hook: "돈은 성격이 있다. 네 사주가 어떤 돈을 부르는지.",
+    hook: "돈은 성격이 있다.\n네 사주가 어떤 돈을 부르는지.",
     description:
       "편재·정재의 자리, 돈이 들어오는 해와 새는 습관. 재물만 모아 읽는다.",
     price: 19900,
@@ -120,10 +137,16 @@ export const PRODUCTS: Product[] = [
     story: KIM_STORY,
     video: KIM_VIDEO,
     videoBg: KIM_BG,
-    cta: "재물을 보라",
+    cta: "내 재물운 바로 확인하기",
     introLines: [
-      "돈 얘기는 서두르면 달아난다. 앉어.",
-      "이름부터 대라.",
+      "돈 얘기는 서두르면 달아난다.",
+      "앉어.",
+      "운명을 펴기 전에,\n이름부터 대라.",
+    ],
+    introReplies: [
+      "그래, 돈 얘기부터.",
+      "앉는다.",
+      "좋아, 내 이름은..",
     ],
     landingCuts: [
       "왔구나.",
